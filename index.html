@@ -29,38 +29,38 @@
         .container {
             width: 100%;
             max-width: 800px;
-            margin: 40px 20px;
+            padding: 40px 20px;
         }
 
-        /* --- 头部区域 --- */
+        /* --- 头部样式 --- */
         header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
 
         h1 {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: #111;
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: #111827;
         }
 
         .subtitle {
-            font-size: 14px;
             color: var(--text-sub);
+            font-size: 14px;
         }
 
         /* --- 卡片通用样式 --- */
         .card {
             background: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            padding: 24px;
-            margin-bottom: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            padding: 30px;
+            margin-bottom: 30px;
         }
 
         /* --- 平台切换 Tab --- */
-        .tabs {
+        .platform-tabs {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
@@ -68,11 +68,12 @@
 
         .tab-btn {
             padding: 8px 16px;
-            border: 1px solid var(--border-color);
-            background: #fff;
             border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: transparent;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 500;
             transition: all 0.2s;
             display: flex;
             align-items: center;
@@ -80,12 +81,12 @@
         }
 
         .tab-btn.active {
-            background: var(--primary-color);
+            background-color: var(--primary-color);
             color: white;
             border-color: var(--primary-color);
         }
 
-        /* --- 输入与按钮 --- */
+        /* --- 输入区域 --- */
         .input-group {
             display: flex;
             gap: 10px;
@@ -107,83 +108,93 @@
         }
 
         .btn-primary {
-            background: var(--primary-color);
+            background-color: var(--primary-color);
             color: white;
             border: none;
             padding: 0 24px;
             border-radius: 8px;
             font-size: 16px;
-            cursor: pointer;
             font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s;
             display: flex;
             align-items: center;
             gap: 8px;
-            transition: opacity 0.2s;
         }
 
         .btn-primary:hover {
             opacity: 0.9;
         }
 
-        .btn-primary:disabled {
-            background: #a5a5a5;
-            cursor: not-allowed;
-        }
-
-        /* --- 结果展示区 --- */
-        .result-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .result-item {
-            padding: 16px;
-            background: #f9fafb;
+        .btn-secondary {
+            background-color: white;
+            color: var(--text-main);
             border: 1px solid var(--border-color);
+            padding: 0 20px;
             border-radius: 8px;
-            font-size: 15px;
-            line-height: 1.5;
-            position: relative;
+            font-size: 14px;
+            cursor: pointer;
         }
 
-        .loading-text {
+        /* --- 结果展示区域 --- */
+        .result-box {
+            background-color: #f9fafb;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 100px;
+            border: 1px dashed var(--border-color);
+        }
+
+        .title-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .title-text {
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .view-count {
+            font-size: 12px;
+            color: #ef4444; /* 红色强调热度 */
+            background: #fef2f2;
+            padding: 4px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        .error-msg {
+            color: #ef4444;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading {
             text-align: center;
             color: var(--text-sub);
             padding: 20px;
         }
 
-        /* --- 下半部分：对标拆解 --- */
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 12px;
+        /* 底部搜索栏样式微调 */
+        .search-section h3 {
+            font-size: 18px;
+            margin-top: 0;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
-
-        .section-desc {
+        .search-desc {
             font-size: 13px;
             color: var(--text-sub);
-            margin-bottom: 16px;
-        }
-
-        .competitor-result {
-            margin-top: 15px;
-            padding: 15px;
-            background: #f0fdf4; /* 浅绿色背景表示成功 */
-            border: 1px solid #bbf7d0;
-            border-radius: 8px;
-            color: #166534;
-            display: none; /* 默认隐藏 */
-        }
-
-        .error-msg {
-            color: #dc2626;
-            font-size: 14px;
-            margin-top: 10px;
-            display: none;
+            margin-bottom: 15px;
         }
 
     </style>
@@ -191,59 +202,49 @@
 <body>
 
 <div class="container">
-    <!-- 顶部标题 -->
     <header>
         <h1>AI 爆款标题生成器</h1>
         <p class="subtitle">DeepSeek 驱动 · 多平台适配 · 一键生成高点击率标题</p>
     </header>
 
-    <!-- 上半部分：标题生成 -->
+    <!-- 模块 1：AI 标题生成 -->
     <div class="card">
-        <!-- 平台切换 -->
-        <div class="tabs">
+        <div class="platform-tabs">
             <button class="tab-btn active" onclick="switchPlatform('xhs')">📕 小红书</button>
             <button class="tab-btn" onclick="switchPlatform('dy')">🎵 抖音</button>
         </div>
 
-        <!-- 输入框 -->
         <div class="input-group">
-            <!-- 注意：这里必须加上 id="keyword" -->
-            <input type="text" id="keyword" placeholder="请输入关键词，例如：减肥、学英语..." value="减肥餐">
-            <button class="btn-primary" id="generateBtn" onclick="generateTitles()">
+            <input type="text" id="keyword-input" placeholder="请输入关键词，例如：减肥餐、职场穿搭...">
+            <button class="btn-primary" onclick="generateTitles()">
                 ✨ AI 生成
             </button>
         </div>
 
-        <!-- 结果列表 -->
-        <div id="results" class="result-list">
-            <!-- 初始占位内容 -->
-            <div class="result-item">【模拟】减肥爆款标题1：3秒学会的懒人秘籍！</div>
-            <div class="result-item">【模拟】减肥这样写，流量直接翻倍！</div>
-            <div class="result-item">【模拟】别再瞎写了！减肥高点击公式</div>
+        <div id="generation-results" class="result-box">
+            <div style="color: #9ca3af; text-align: center; padding-top: 30px;">等待生成...</div>
         </div>
     </div>
 
-    <!-- 下半部分：对标拆解 -->
-    <div class="card">
-        <div class="section-title">🔍 爆款对标拆解</div>
-        <p class="section-desc">输入领域关键词，系统将自动抓取全网热门视频标题，并分析爆点。</p>
+    <!-- 模块 2：对标拆解 -->
+    <div class="card search-section">
+        <h3>🔍 爆款对标拆解</h3>
+        <p class="search-desc">输入领域关键词，系统将自动抓取全网热门视频标题，并分析爆点。</p>
 
         <div class="input-group">
-            <!-- 注意：这里必须加上 id="competitorKeyword" -->
-            <input type="text" id="competitorKeyword" placeholder="输入想要对标的领域..." value="减肥">
-            <button class="btn-primary" style="background-color: #fff; color: #333; border: 1px solid #ddd;" onclick="analyzeCompetitors()">
-                搜索热门素材
-            </button>
+            <input type="text" id="search-input" placeholder="输入领域关键词...">
+            <button class="btn-secondary" onclick="analyzeCompetitors()">搜索热门素材</button>
         </div>
 
-        <!-- 结果反馈 -->
-        <div id="competitorResult" class="competitor-result"></div>
-        <div id="competitorError" class="error-msg"></div>
+        <div id="analysis-results" class="result-box">
+            <div style="color: #9ca3af; text-align: center; padding-top: 30px;">暂无搜索结果</div>
+        </div>
     </div>
 </div>
 
 <script>
     // ================= 核心配置 =================
+    // 你的 Worker 地址
     const WORKER_API_URL = 'https://title-rocket.li987270446.workers.dev';
     let currentPlatform = 'xhs'; // 默认小红书
 
@@ -253,43 +254,32 @@
         const tabs = document.querySelectorAll('.tab-btn');
         tabs.forEach(tab => tab.classList.remove('active'));
 
-        // 简单的视觉切换逻辑
+        // 简单的样式切换逻辑
         if (platform === 'xhs') {
             tabs[0].classList.add('active');
         } else {
             tabs[1].classList.add('active');
         }
-        console.log("当前平台切换为:", platform);
     }
 
     // ================= 功能 1：生成标题 =================
     async function generateTitles() {
-        const keywordInput = document.getElementById('keyword');
-        const resultsDiv = document.getElementById('results');
-        const btn = document.getElementById('generateBtn');
-
-        const keyword = keywordInput.value.trim();
+        const keyword = document.getElementById('keyword-input').value.trim();
+        const resultBox = document.getElementById('generation-results');
 
         if (!keyword) {
-            alert('请先输入关键词！');
+            alert('请输入关键词！');
             return;
         }
 
-        // UI 状态更新：加载中
-        btn.disabled = true;
-        btn.innerHTML = '⏳ 生成中...';
-        resultsDiv.innerHTML = '<div class="loading-text">正在调用 DeepSeek 模型思考中...</div>';
+        // 显示加载状态
+        resultBox.innerHTML = '<div class="loading">正在调用 DeepSeek 模型思考中... ⏳</div>';
 
         try {
-            // 构建 GET 请求 URL
-            const url = `${WORKER_API_URL}/search?q=${encodeURIComponent(keyword)}&platform=${currentPlatform}`;
+            // 构建 URL：使用 GET 请求，参数拼在 URL 后面
+            const url = `${WORKER_API_URL}/generate?keyword=${encodeURIComponent(keyword)}&platform=${currentPlatform}`;
 
-            const response = await fetch(url, {
-                method: 'GET', // 强制使用 GET
-                headers: {
-                    'Accept': 'application/json'
-                }
-            });
+            const response = await fetch(url);
 
             if (!response.ok) {
                 throw new Error(`API 请求失败: ${response.status}`);
@@ -298,64 +288,45 @@
             const data = await response.json();
 
             // 渲染结果
-            // 假设后端返回的是 { titles: ["标题1", "标题2"] } 或者是一个数组
-            // 如果后端返回格式不同，请在这里调整
-            let titles = [];
-            if (Array.isArray(data)) {
-                titles = data;
-            } else if (data.titles && Array.isArray(data.titles)) {
-                titles = data.titles;
+            if (data.success && data.data && data.data.length > 0) {
+                let html = '';
+                data.data.forEach(item => {
+                    html += `
+                        <div class="title-item">
+                            <span class="title-text">${item.title}</span>
+                            <span class="view-count">预估浏览: ${item.views || 'High'}</span>
+                        </div>
+                    `;
+                });
+                resultBox.innerHTML = html;
             } else {
-                // 兼容处理：如果返回的是个对象但没 titles 字段，尝试把整个对象转字符串显示，方便调试
-                titles = [JSON.stringify(data)];
-            }
-
-            if (titles.length === 0) {
-                resultsDiv.innerHTML = '<div class="loading-text">未生成有效标题，请重试。</div>';
-            } else {
-                resultsDiv.innerHTML = titles.map(t => `<div class="result-item">${t}</div>`).join('');
+                resultBox.innerHTML = '<div class="error-msg">未生成有效标题，请重试。</div>';
             }
 
         } catch (error) {
             console.error(error);
-            resultsDiv.innerHTML = `<div class="loading-text" style="color:red">❌ 生成失败: ${error.message}</div>`;
-        } finally {
-            // 恢复按钮状态
-            btn.disabled = false;
-            btn.innerHTML = '✨ AI 生成';
+            resultBox.innerHTML = `<div class="error-msg">❌ 生成失败: ${error.message}<br><small>请检查控制台或确认 Worker 服务正常</small></div>`;
         }
     }
 
     // ================= 功能 2：对标拆解 =================
     async function analyzeCompetitors() {
-        const kwInput = document.getElementById('competitorKeyword');
-        const resultBox = document.getElementById('competitorResult');
-        const errorBox = document.getElementById('competitorError');
-
-        const keyword = kwInput.value.trim();
+        const keyword = document.getElementById('search-input').value.trim();
+        const resultBox = document.getElementById('analysis-results');
 
         if (!keyword) {
-            alert('请输入对标关键词');
+            alert('请输入搜索关键词！');
             return;
         }
 
-        // UI 状态更新
-        resultBox.style.display = 'none';
-        errorBox.style.display = 'none';
-        errorBox.innerText = '正在搜索全网热门素材...';
-        errorBox.style.color = '#666'; // 用灰色文字显示加载状态
-        errorBox.style.display = 'block';
+        // 显示加载状态
+        resultBox.innerHTML = '<div class="loading">正在全网搜索热门素材... 🔍</div>';
 
         try {
-            // 同样使用 GET 请求
-            const url = `${WORKER_API_URL}/search?q=${encodeURIComponent(keyword)}&type=competitor`;
+            // 构建 URL
+            const url = `${WORKER_API_URL}/search?keyword=${encodeURIComponent(keyword)}`;
 
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json'
-                }
-            });
+            const response = await fetch(url);
 
             if (!response.ok) {
                 throw new Error(`服务器响应错误: ${response.status}`);
@@ -363,25 +334,25 @@
 
             const data = await response.json();
 
-            // 显示成功结果
-            errorBox.style.display = 'none'; // 隐藏加载/错误提示
-            resultBox.style.display = 'block';
-
-            // 格式化显示数据
-            let content = "";
-            if (typeof data === 'object') {
-                content = JSON.stringify(data, null, 2); // 格式化 JSON 显示
+            // 渲染结果
+            if (data.success && data.data && data.data.length > 0) {
+                let html = '';
+                data.data.forEach(item => {
+                    html += `
+                        <div class="title-item">
+                            <span class="title-text">${item.title}</span>
+                            <span class="view-count">🔥 ${item.views}</span>
+                        </div>
+                    `;
+                });
+                resultBox.innerHTML = html;
             } else {
-                content = data;
+                resultBox.innerHTML = '<div class="error-msg">未找到相关热门素材。</div>';
             }
-
-            resultBox.innerHTML = `<strong>✅ 搜索成功：</strong><br><pre style="white-space: pre-wrap; font-family: monospace;">${content}</pre>`;
 
         } catch (error) {
             console.error(error);
-            errorBox.style.display = 'block';
-            errorBox.style.color = '#dc2626'; // 红色报错
-            errorBox.innerText = `❌ 搜索出错: ${error.message}`;
+            resultBox.innerHTML = `<div class="error-msg">❌ 搜索出错: ${error.message}</div>`;
         }
     }
 </script>
