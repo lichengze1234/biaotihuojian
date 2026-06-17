@@ -190,24 +190,39 @@
     }
 
     function renderAnalysis(items) {
-        const container = document.getElementById('search-result-container');
-        container.innerHTML = '';
+    const container = document.getElementById('search-result-container');
+    container.innerHTML = '';
 
-        items.forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'analysis-card';
-            div.innerHTML = `
-                <div class="analysis-header">
-                    <span>📌 ${item.title || '热门案例'}</span>
-                    <span style="color:#ef4444">🔥 ${item.views || '10w+'} 赞</span>
-                </div>
-                <div class="analysis-body">
-                    <strong>💡 核心爆点拆解：</strong>${item.analysis || '该标题利用了用户痛点，结合了具体数字，极具吸引力。'}
-                </div>
-            `;
-            container.appendChild(div);
-        });
-    }
+    items.forEach(item => {
+        // 将标题进行 URL 编码，方便跳转搜索
+        const encodedTitle = encodeURIComponent(item.title);
+        
+        // 动态生成小红书和抖音/B站的直达搜索链接
+        const xhsSearchUrl = `https://www.xiaohongshu.com/search_result?keyword=${encodedTitle}`;
+        const blblSearchUrl = `https://search.bilibili.com/all?keyword=${encodedTitle}`;
+
+        const div = document.createElement('div');
+        div.className = 'analysis-card';
+        div.innerHTML = `
+            <div class="analysis-header">
+                <span>📌 ${item.title || '热门案例'}</span>
+                <span style="color:#ef4444">🔥 ${item.views || '10w+'} 赞</span>
+            </div>
+            <div class="analysis-body">
+                <strong>💡 核心爆点拆解：</strong>${item.analysis || '该标题利用了用户痛点，结合了具体数字，极具吸引力。'}
+            </div>
+            <div class="analysis-links" style="margin-top: 12px; display: flex; gap: 10px;">
+                <a href="${xhsSearchUrl}" target="_blank" style="background: #fee2e2; color: #ff2442; padding: 6px 12px; border-radius: 6px; font-size: 12px; text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; gap: 4px; border: 1px solid #fecaca;">
+                    📕 📕 去小红书搜原片
+                </a>
+                <a href="${blblSearchUrl}" target="_blank" style="background: #e0f2fe; color: #0284c7; padding: 6px 12px; border-radius: 6px; font-size: 12px; text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; gap: 4px; border: 1px solid #bae6fd;">
+                    📺 去 B 站搜原片
+                </a>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
 
     window.copyToClipboard = function(text, btn) {
         navigator.clipboard.writeText(text).then(() => {
