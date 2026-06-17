@@ -244,7 +244,6 @@
 
 <script>
     // ================= 核心配置 =================
-    // 你的 Worker 地址
     const WORKER_API_URL = 'https://title-rocket.li987270446.workers.dev';
     let currentPlatform = 'xhs'; // 默认小红书
 
@@ -253,8 +252,6 @@
         currentPlatform = platform;
         const tabs = document.querySelectorAll('.tab-btn');
         tabs.forEach(tab => tab.classList.remove('active'));
-
-        // 简单的样式切换逻辑
         if (platform === 'xhs') {
             tabs[0].classList.add('active');
         } else {
@@ -262,99 +259,125 @@
         }
     }
 
-    // ================= 功能 1：生成标题 =================
+    // ================= 功能 1：AI 生成标题 =================
     async function generateTitles() {
-        const keyword = document.getElementById('keyword-input').value.trim();
-        const resultBox = document.getElementById('generation-results');
+        const inputEl = document.getElementById('keyword-input');
+        const resultsContainer = document.getElementById('results-container');
+        const keyword = inputEl.value.trim();
 
         if (!keyword) {
             alert('请输入关键词！');
             return;
         }
 
-        // 显示加载状态
-        resultBox.innerHTML = '<div class="loading">正在调用 DeepSeek 模型思考中... ⏳</div>';
+        // 1. 显示加载状态
+        resultsContainer.innerHTML = '<div class="loading-state">🚀 AI 正在思考中...</div>';
 
         try {
-            // 构建 URL：使用 GET 请求，参数拼在 URL 后面
-            const url = `${WORKER_API_URL}/generate?keyword=${encodeURIComponent(keyword)}&platform=${currentPlatform}`;
+            // 2. 发起请求 (使用 GET 请求，带上关键词和平台)
+            const response = await fetch(`${WORKER_API_URL}/generate?keyword=${encodeURIComponent(keyword)}&platform=${currentPlatform}`);
 
-            const response = await fetch(url);
+            if (!response.ok) throw new Error(`服务器响应错误: ${response.status}`);
 
-            if (!response.ok) {
-                throw new Error(`API 请求失败: ${response.status}`);
-            }
+            const resData = await response.json();
 
-            const data = await response.json();
-
-            // 渲染结果
-            if (data.success && data.data && data.data.length > 0) {
-                let html = '';
-                data.data.forEach(item => {
-                    html += `
-                        <div class="title-item">
-                            <span class="title-text">${item.title}</span>
-                            <span class="view-count">预估浏览: ${item.views || 'High'}</span>
-                        </div>
-                    `;
-                });
-                resultBox.innerHTML = html;
+            // 3. 渲染结果
+            if (resData.success && resData.data && resData.data.length > 0) {
+                renderTitleCards(resData.data);
             } else {
-                resultBox.innerHTML = '<div class="error-msg">未生成有效标题，请重试。</div>';
+                resultsContainer.innerHTML = '<div class="error-state">❌ 生成失败：未获取到有效数据</div>';
             }
 
         } catch (error) {
             console.error(error);
-            resultBox.innerHTML = `<div class="error-msg">❌ 生成失败: ${error.message}<br><small>请检查控制台或确认 Worker 服务正常</small></div>`;
+            resultsContainer.innerHTML = `<div class="error-state">❌ 请求出错: ${error.message}</div>`;
         }
     }
 
-    // ================= 功能 2：对标拆解 =================
-    async function analyzeCompetitors() {
-        const keyword = document.getElementById('search-input').value.trim();
-        const resultBox = document.getElementById('analysis-results');
+    // 渲染标题卡片的核心函数
+    function renderTitleCards(dataList) {
+        const container = document.getElementById('results-container');
+        container.innerHTML = ''; // 清空旧数据
+
+        dataList.forEach(item => {
+            // 【关键修复】兼容不同的字段名 (title, content, text)
+            // 优先找 title，找不到找 content，再找不到找 text
+            const titleText = item.title || item.content || item.text || "无标题内容";
+            const views = item.views || "High"; // 默认显示 High
+
+            const card = document.createElement('div');
+            card.className = 'result-card';
+            card.innerHTML = `
+                <div class="card-content">${titleText}</div>
+                <div class="card-badge">预估浏览: ${views}</div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    // ================= 功能 2：爆款对标拆解 =================
+    async function searchCompetitors() {
+        const inputEl = document.getElementById('competitor-keyword'); // 确保 HTML 里有这个 ID
+        const resultsArea = document.getElementById('competitor-results'); // 确保 HTML 里有这个 ID
+        const keyword = inputEl ? inputEl.value.trim() : "";
 
         if (!keyword) {
-            alert('请输入搜索关键词！');
+            alert('请输入要拆解的关键词！');
             return;
         }
 
-        // 显示加载状态
-        resultBox.innerHTML = '<div class="loading">正在全网搜索热门素材... 🔍</div>';
+        resultsArea.innerHTML = '<div class="loading-state">🔍 正在全网搜索热门素材...</div>';
 
         try {
-            // 构建 URL
-            const url = `${WORKER_API_URL}/search?keyword=${encodeURIComponent(keyword)}`;
+            // 发起搜索请求
+            const response = await fetch(`${WORKER_API_URL}/search?keyword=${encodeURIComponent(keyword)}`);
 
-            const response = await fetch(url);
+            if (!response.ok) throw new Error(`服务器响应错误: ${response.status}`);
 
-            if (!response.ok) {
-                throw new Error(`服务器响应错误: ${response.status}`);
-            }
+            const resData = await response.json();
 
-            const data = await response.json();
-
-            // 渲染结果
-            if (data.success && data.data && data.data.length > 0) {
-                let html = '';
-                data.data.forEach(item => {
-                    html += `
-                        <div class="title-item">
-                            <span class="title-text">${item.title}</span>
-                            <span class="view-count">🔥 ${item.views}</span>
-                        </div>
-                    `;
-                });
-                resultBox.innerHTML = html;
+            if (resData.success) {
+                 // 这里假设后端返回的是列表，如果不是，需要根据实际结构调整
+                 // 为了演示，我们暂时把返回的 data 直接打印出来，或者尝试渲染
+                 if(Array.isArray(resData.data)) {
+                     renderCompetitorList(resData.data);
+                 } else {
+                     resultsArea.innerHTML = `<div class="success-state">✅ 搜索完成，但未发现结构化列表数据。<br>原始数据: ${JSON.stringify(resData.data).substring(0, 100)}...</div>`;
+                 }
             } else {
-                resultBox.innerHTML = '<div class="error-msg">未找到相关热门素材。</div>';
+                resultsArea.innerHTML = `<div class="error-state">❌ 搜索失败: ${resData.message || '未知错误'}</div>`;
             }
 
         } catch (error) {
             console.error(error);
-            resultBox.innerHTML = `<div class="error-msg">❌ 搜索出错: ${error.message}</div>`;
+            resultsArea.innerHTML = `<div class="error-state">❌ 搜索出错: ${error.message}</div>`;
         }
     }
+
+    // 简单的对标结果渲染（如果后端返回了列表）
+    function renderCompetitorList(list) {
+         const container = document.getElementById('competitor-results');
+         container.innerHTML = '';
+         list.forEach(item => {
+             const div = document.createElement('div');
+             div.style.padding = "10px";
+             div.style.borderBottom = "1px solid #eee";
+             // 同样兼容字段名
+             div.innerText = item.title || item.content || JSON.stringify(item);
+             container.appendChild(div);
+         });
+    }
+
+    // 页面加载完成后绑定事件（防止按钮点击没反应）
+    document.addEventListener('DOMContentLoaded', () => {
+        // 绑定生成按钮
+        const genBtn = document.querySelector('.btn-primary'); // 假设生成按钮是这个类
+        if(genBtn) genBtn.onclick = generateTitles;
+
+        // 绑定搜索按钮
+        const searchBtn = document.querySelector('.btn-secondary'); // 假设搜索按钮是这个类
+        if(searchBtn) searchBtn.onclick = searchCompetitors;
+    });
 </script>
 
 </body>
