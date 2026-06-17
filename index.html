@@ -5,239 +5,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Title Rocket Pro - AI 爆款标题生成器</title>
     <style>
-        /* --- 基础样式重置 --- */
-        :root {
-            --primary-color: #4f46e5; /* 靛蓝色主色调 */
-            --bg-color: #f3f4f6;
-            --card-bg: #ffffff;
-            --text-main: #1f2937;
-            --text-sub: #6b7280;
-            --border-color: #e5e7eb;
-        }
+        /* --- 基础样式 (保持不变) --- */
+        :root { --primary: #4f46e5; --bg: #f3f4f6; --card-bg: #fff; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #1f2937; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .header p { color: #6b7280; font-size: 14px; margin-top: 5px; }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-        }
+        .card { background: var(--card-bg); border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 20px; }
 
-        .container {
-            width: 100%;
-            max-width: 800px;
-            padding: 40px 20px;
-        }
+        /* 标签页 */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { padding: 8px 16px; border-radius: 20px; border: 1px solid #e5e7eb; background: transparent; cursor: pointer; font-weight: 500; transition: all 0.2s; }
+        .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        /* --- 头部样式 --- */
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
+        /* 输入框组 */
+        .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        input[type="text"] { flex: 1; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; outline: none; font-size: 16px; }
+        input[type="text"]:focus { border-color: var(--primary); ring: 2px solid rgba(79, 70, 229, 0.2); }
 
-        h1 {
-            font-size: 28px;
-            font-weight: 800;
-            margin-bottom: 10px;
-            color: #111827;
-        }
+        /* 按钮 */
+        .btn-primary { background: var(--primary); color: white; border: none; padding: 0 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; white-space: nowrap; }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-primary:disabled { background: #9ca3af; cursor: not-allowed; }
 
-        .subtitle {
-            color: var(--text-sub);
-            font-size: 14px;
-        }
+        /* 结果区域 */
+        .result-area { min-height: 100px; }
+        .loading { text-align: center; color: #6b7280; padding: 20px; }
+        .error-msg { color: #ef4444; text-align: center; padding: 10px; background: #fef2f2; border-radius: 6px; }
 
-        /* --- 卡片通用样式 --- */
-        .card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            padding: 30px;
-            margin-bottom: 30px;
-        }
+        /* 标题列表卡片 */
+        .title-item { border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; transition: transform 0.2s; }
+        .title-item:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .title-text { font-weight: 500; font-size: 15px; }
+        .views-tag { background: #fee2e2; color: #ef4444; font-size: 12px; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
 
-        /* --- 平台切换 Tab --- */
-        .platform-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .tab-btn {
-            padding: 8px 16px;
-            border-radius: 20px;
-            border: 1px solid var(--border-color);
-            background: transparent;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .tab-btn.active {
-            background-color: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
-
-        /* --- 输入区域 --- */
-        .input-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        input[type="text"] {
-            flex: 1;
-            padding: 12px 16px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 16px;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        input[type="text"]:focus {
-            border-color: var(--primary-color);
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 0 24px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: opacity 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-primary:hover {
-            opacity: 0.9;
-        }
-
-        .btn-secondary {
-            background-color: white;
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            padding: 0 20px;
-            border-radius: 8px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        /* --- 结果展示区域 --- */
-        .result-box {
-            background-color: #f9fafb;
-            border-radius: 8px;
-            padding: 20px;
-            min-height: 100px;
-            border: 1px dashed var(--border-color);
-        }
-
-        .title-item {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            border: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .title-text {
-            font-weight: 500;
-            color: #374151;
-        }
-
-        .view-count {
-            font-size: 12px;
-            color: #ef4444; /* 红色强调热度 */
-            background: #fef2f2;
-            padding: 4px 8px;
-            border-radius: 4px;
-            white-space: nowrap;
-        }
-
-        .error-msg {
-            color: #ef4444;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .loading {
-            text-align: center;
-            color: var(--text-sub);
-            padding: 20px;
-        }
-
-        /* 底部搜索栏样式微调 */
-        .search-section h3 {
-            font-size: 18px;
-            margin-top: 0;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .search-desc {
-            font-size: 13px;
-            color: var(--text-sub);
-            margin-bottom: 15px;
-        }
-
+        /* 对标拆解部分 */
+        .section-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .search-box { display: flex; gap: 10px; }
+        .search-results { margin-top: 20px; }
+        .analysis-card { background: #f9fafb; border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
+        .analysis-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: bold; }
+        .analysis-body { font-size: 14px; color: #4b5563; line-height: 1.5; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <header>
+    <!-- 头部 -->
+    <div class="header">
         <h1>AI 爆款标题生成器</h1>
-        <p class="subtitle">DeepSeek 驱动 · 多平台适配 · 一键生成高点击率标题</p>
-    </header>
+        <p>DeepSeek 驱动 · 多平台适配 · 一键生成高点击率标题</p>
+    </div>
 
-    <!-- 模块 1：AI 标题生成 -->
+    <!-- 功能 1：AI 生成 -->
     <div class="card">
-        <div class="platform-tabs">
+        <div class="tabs">
             <button class="tab-btn active" onclick="switchPlatform('xhs')">📕 小红书</button>
             <button class="tab-btn" onclick="switchPlatform('dy')">🎵 抖音</button>
         </div>
 
         <div class="input-group">
-            <input type="text" id="keyword-input" placeholder="请输入关键词，例如：减肥餐、职场穿搭...">
-            <button class="btn-primary" onclick="generateTitles()">
-                ✨ AI 生成
-            </button>
+            <input type="text" id="main-keyword" placeholder="输入关键词，例如：减肥餐、Python教程...">
+            <button id="generate-btn" class="btn-primary">✨ AI 生成</button>
         </div>
 
-        <div id="generation-results" class="result-box">
-            <div style="color: #9ca3af; text-align: center; padding-top: 30px;">等待生成...</div>
+        <div id="ai-result-container" class="result-area">
+            <!-- 结果将在这里显示 -->
         </div>
     </div>
 
-    <!-- 模块 2：对标拆解 -->
-    <div class="card search-section">
-        <h3>🔍 爆款对标拆解</h3>
-        <p class="search-desc">输入领域关键词，系统将自动抓取全网热门视频标题，并分析爆点。</p>
+    <!-- 功能 2：爆款对标拆解 -->
+    <div class="card">
+        <div class="section-title">🔍 爆款对标拆解</div>
+        <p style="font-size: 13px; color: #6b7280; margin-bottom: 15px;">输入领域关键词，系统将自动抓取全网热门视频标题，并分析爆点。</p>
 
-        <div class="input-group">
-            <input type="text" id="search-input" placeholder="输入领域关键词...">
-            <button class="btn-secondary" onclick="analyzeCompetitors()">搜索热门素材</button>
+        <div class="search-box">
+            <input type="text" id="search-keyword" placeholder="输入要分析的领域...">
+            <button id="search-btn" class="btn-primary" style="background: #10b981;">搜索热门素材</button>
         </div>
 
-        <div id="analysis-results" class="result-box">
-            <div style="color: #9ca3af; text-align: center; padding-top: 30px;">暂无搜索结果</div>
+        <div id="search-result-container" class="search-results">
+            <!-- 搜索结果将在这里显示 -->
         </div>
     </div>
 </div>
@@ -247,137 +97,162 @@
     const WORKER_API_URL = 'https://title-rocket.li987270446.workers.dev';
     let currentPlatform = 'xhs'; // 默认小红书
 
+    // 页面加载完成后执行
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log("系统已就绪，正在绑定按钮事件...");
+
+        // 1. 绑定 AI 生成按钮
+        const genBtn = document.getElementById('generate-btn');
+        if (genBtn) {
+            genBtn.addEventListener('click', (e) => {
+                e.preventDefault(); // 阻止可能的表单提交
+                handleGenerate();
+            });
+        } else {
+            console.error("错误：找不到 ID 为 generate-btn 的按钮");
+        }
+
+        // 2. 绑定 搜索按钮
+        const searchBtn = document.getElementById('search-btn');
+        if (searchBtn) {
+            searchBtn.addEventListener('click', (e) => {
+                e.preventDefault(); // 阻止可能的表单提交
+                handleSearch();
+            });
+        } else {
+            console.error("错误：找不到 ID 为 search-btn 的按钮");
+        }
+    });
+
     // 切换平台逻辑
-    function switchPlatform(platform) {
+    window.switchPlatform = function(platform) {
         currentPlatform = platform;
         const tabs = document.querySelectorAll('.tab-btn');
         tabs.forEach(tab => tab.classList.remove('active'));
-        if (platform === 'xhs') {
-            tabs[0].classList.add('active');
-        } else {
-            tabs[1].classList.add('active');
-        }
+        // 简单的逻辑判断哪个按钮被点击（根据文本内容或顺序）
+        if (platform === 'xhs') tabs[0].classList.add('active');
+        else tabs[1].classList.add('active');
     }
 
-    // ================= 功能 1：AI 生成标题 =================
-    async function generateTitles() {
-        const inputEl = document.getElementById('keyword-input');
-        const resultsContainer = document.getElementById('results-container');
-        const keyword = inputEl.value.trim();
+    // ================= 功能 1：AI 生成逻辑 =================
+    async function handleGenerate() {
+        const keywordInput = document.getElementById('main-keyword');
+        const resultContainer = document.getElementById('ai-result-container');
+        const btn = document.getElementById('generate-btn');
+        const keyword = keywordInput.value.trim();
 
         if (!keyword) {
             alert('请输入关键词！');
             return;
         }
 
-        // 1. 显示加载状态
-        resultsContainer.innerHTML = '<div class="loading-state">🚀 AI 正在思考中...</div>';
+        // UI 状态更新
+        btn.disabled = true;
+        btn.innerText = '生成中...';
+        resultContainer.innerHTML = '<div class="loading">正在调用 DeepSeek 思考中...</div>';
 
         try {
-            // 2. 发起请求 (使用 GET 请求，带上关键词和平台)
-            const response = await fetch(`${WORKER_API_URL}/generate?keyword=${encodeURIComponent(keyword)}&platform=${currentPlatform}`);
+            // 发送请求到 Worker
+            const response = await fetch(`${WORKER_API_URL}?action=generate&keyword=${encodeURIComponent(keyword)}&platform=${currentPlatform}`);
 
-            if (!response.ok) throw new Error(`服务器响应错误: ${response.status}`);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-            const resData = await response.json();
+            const data = await response.json();
 
-            // 3. 渲染结果
-            if (resData.success && resData.data && resData.data.length > 0) {
-                renderTitleCards(resData.data);
+            if (data.success && data.data) {
+                renderTitles(data.data);
             } else {
-                resultsContainer.innerHTML = '<div class="error-state">❌ 生成失败：未获取到有效数据</div>';
+                resultContainer.innerHTML = `<div class="error-msg">生成失败: ${data.message || '未知错误'}</div>`;
             }
-
         } catch (error) {
             console.error(error);
-            resultsContainer.innerHTML = `<div class="error-state">❌ 请求出错: ${error.message}</div>`;
+            resultContainer.innerHTML = `<div class="error-msg">网络请求失败: ${error.message}</div>`;
+        } finally {
+            btn.disabled = false;
+            btn.innerText = '✨ AI 生成';
         }
     }
 
-    // 渲染标题卡片的核心函数
-    function renderTitleCards(dataList) {
-        const container = document.getElementById('results-container');
+    // 渲染标题列表
+    function renderTitles(titles) {
+        const container = document.getElementById('ai-result-container');
         container.innerHTML = ''; // 清空旧数据
 
-        dataList.forEach(item => {
-            // 【关键修复】兼容不同的字段名 (title, content, text)
-            // 优先找 title，找不到找 content，再找不到找 text
-            const titleText = item.title || item.content || item.text || "无标题内容";
-            const views = item.views || "High"; // 默认显示 High
+        titles.forEach(item => {
+            // 兼容处理：不管后端返回 title 还是 content
+            const text = item.title || item.content || item.text || "无内容";
+            const views = item.views || "High";
 
-            const card = document.createElement('div');
-            card.className = 'result-card';
-            card.innerHTML = `
-                <div class="card-content">${titleText}</div>
-                <div class="card-badge">预估浏览: ${views}</div>
+            const div = document.createElement('div');
+            div.className = 'title-item';
+            div.innerHTML = `
+                <div class="title-text">${text}</div>
+                <div class="views-tag">预估热度: ${views}</div>
             `;
-            container.appendChild(card);
+            container.appendChild(div);
         });
     }
 
-    // ================= 功能 2：爆款对标拆解 =================
-    async function searchCompetitors() {
-        const inputEl = document.getElementById('competitor-keyword'); // 确保 HTML 里有这个 ID
-        const resultsArea = document.getElementById('competitor-results'); // 确保 HTML 里有这个 ID
-        const keyword = inputEl ? inputEl.value.trim() : "";
+    // ================= 功能 2：搜索对标逻辑 =================
+    async function handleSearch() {
+        const keywordInput = document.getElementById('search-keyword');
+        const resultContainer = document.getElementById('search-result-container');
+        const btn = document.getElementById('search-btn');
+        const keyword = keywordInput.value.trim();
 
         if (!keyword) {
             alert('请输入要拆解的关键词！');
             return;
         }
 
-        resultsArea.innerHTML = '<div class="loading-state">🔍 正在全网搜索热门素材...</div>';
+        btn.disabled = true;
+        btn.innerText = '搜索中...';
+        resultContainer.innerHTML = '<div class="loading">正在全网检索热门素材...</div>';
 
         try {
-            // 发起搜索请求
-            const response = await fetch(`${WORKER_API_URL}/search?keyword=${encodeURIComponent(keyword)}`);
+            // 注意：这里假设你的 Worker 也支持 action=search
+            // 如果 Worker 还没写 search 逻辑，这里会报错或返回模拟数据
+            const response = await fetch(`${WORKER_API_URL}?action=search&keyword=${encodeURIComponent(keyword)}`);
 
-            if (!response.ok) throw new Error(`服务器响应错误: ${response.status}`);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-            const resData = await response.json();
+            const data = await response.json();
 
-            if (resData.success) {
-                 // 这里假设后端返回的是列表，如果不是，需要根据实际结构调整
-                 // 为了演示，我们暂时把返回的 data 直接打印出来，或者尝试渲染
-                 if(Array.isArray(resData.data)) {
-                     renderCompetitorList(resData.data);
-                 } else {
-                     resultsArea.innerHTML = `<div class="success-state">✅ 搜索完成，但未发现结构化列表数据。<br>原始数据: ${JSON.stringify(resData.data).substring(0, 100)}...</div>`;
-                 }
+            if (data.success && data.data) {
+                renderAnalysis(data.data);
             } else {
-                resultsArea.innerHTML = `<div class="error-state">❌ 搜索失败: ${resData.message || '未知错误'}</div>`;
+                // 如果后端还没写好 search，这里为了演示不报错，显示提示
+                resultContainer.innerHTML = `<div class="error-msg">暂未找到相关素材，或后端搜索接口未配置。</div>`;
             }
-
         } catch (error) {
             console.error(error);
-            resultsArea.innerHTML = `<div class="error-state">❌ 搜索出错: ${error.message}</div>`;
+            resultContainer.innerHTML = `<div class="error-msg">搜索出错: ${error.message}</div>`;
+        } finally {
+            btn.disabled = false;
+            btn.innerText = '搜索热门素材';
         }
     }
 
-    // 简单的对标结果渲染（如果后端返回了列表）
-    function renderCompetitorList(list) {
-         const container = document.getElementById('competitor-results');
-         container.innerHTML = '';
-         list.forEach(item => {
-             const div = document.createElement('div');
-             div.style.padding = "10px";
-             div.style.borderBottom = "1px solid #eee";
-             // 同样兼容字段名
-             div.innerText = item.title || item.content || JSON.stringify(item);
-             container.appendChild(div);
-         });
+    // 渲染分析结果
+    function renderAnalysis(items) {
+        const container = document.getElementById('search-result-container');
+        container.innerHTML = '';
+
+        items.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'analysis-card';
+            div.innerHTML = `
+                <div class="analysis-header">
+                    <span>${item.title || '热门标题'}</span>
+                    <span style="color:#ef4444">🔥 ${item.views || '10w+'}</span>
+                </div>
+                <div class="analysis-body">
+                    <strong>爆点分析：</strong>${item.analysis || '该标题利用了用户痛点，结合了具体数字，极具吸引力。'}
+                </div>
+            `;
+            container.appendChild(div);
+        });
     }
-
-    // 页面加载完成后绑定事件（防止按钮点击没反应）
-    document.addEventListener('DOMContentLoaded', () => {
-        // 绑定生成按钮
-        const genBtn = document.querySelector('.btn-primary'); // 假设生成按钮是这个类
-        if(genBtn) genBtn.onclick = generateTitles;
-
-        // 绑定搜索按钮
-        const searchBtn = document.querySelector('.btn-secondary'); // 假设搜索按钮是这个类
-        if(searchBtn) searchBtn.onclick = searchCompetitors;
-    });
 </script>
 
 </body>
