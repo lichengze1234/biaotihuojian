@@ -3,174 +3,246 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Title Rocket Pro - AI爆款标题生成器</title>
-    <!-- 引入图标库 -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Title Rocket Pro - AI 爆款标题生成器</title>
     <style>
+        /* --- 基础样式重置 --- */
         :root {
-            --primary: #4f46e5; /* 更高级的靛蓝色 */
-            --primary-hover: #4338ca;
-            --bg-color: #f8fafc;
+            --primary-color: #4f46e5; /* 靛蓝色主色调 */
+            --bg-color: #f3f4f6;
             --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-sub: #64748b;
-            --border-color: #e2e8f0;
-            --xhs-red: #ff2442;
-            --douyin-black: #000000;
+            --text-main: #1f2937;
+            --text-sub: #6b7280;
+            --border-color: #e5e7eb;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-
-        body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
-
-        /* 顶部导航 */
-        header {
-            background: var(--card-bg);
-            border-bottom: 1px solid var(--border-color);
-            padding: 1rem 2rem;
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            justify-content: center;
+            min-height: 100vh;
         }
 
-        .logo { font-size: 1.25rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; }
-        .user-info { display: flex; align-items: center; gap: 1rem; font-size: 0.9rem; color: var(--text-sub); }
-        .avatar { width: 32px; height: 32px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 40px 20px;
+        }
 
-        /* 主体内容 */
-        main { flex: 1; max-width: 800px; margin: 3rem auto; padding: 0 1.5rem; width: 100%; }
+        /* --- 头部区域 --- */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
 
-        .hero-title { text-align: center; margin-bottom: 2rem; }
-        .hero-title h1 { font-size: 2rem; margin-bottom: 0.5rem; color: var(--text-main); }
-        .hero-title p { color: var(--text-sub); }
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #111;
+        }
 
-        /* 卡片容器 */
-        .card { background: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); padding: 2rem; margin-bottom: 2rem; }
+        .subtitle {
+            font-size: 14px;
+            color: var(--text-sub);
+        }
 
-        /* 平台切换 Tab */
-        .platform-tabs { display: flex; background: #f1f5f9; padding: 4px; border-radius: 8px; margin-bottom: 1.5rem; width: fit-content; }
+        /* --- 卡片通用样式 --- */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        /* --- 平台切换 Tab --- */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
         .tab-btn {
-            padding: 8px 20px; border: none; background: transparent; cursor: pointer; border-radius: 6px; font-weight: 500; color: var(--text-sub); transition: all 0.3s; display: flex; align-items: center; gap: 6px;
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
+            background: #fff;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
-        .tab-btn.active { background: white; color: var(--text-main); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .tab-btn i.xhs-icon { color: var(--xhs-red); }
-        .tab-btn i.dy-icon { color: var(--douyin-black); }
 
-        /* 输入区域 */
-        .input-group { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
-        input[type="text"] {
-            flex: 1; padding: 12px 16px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 1rem; outline: none; transition: border-color 0.2s;
+        .tab-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
         }
-        input[type="text"]:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+
+        /* --- 输入与按钮 --- */
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+        }
 
         .btn-primary {
-            background: var(--primary); color: white; border: none; padding: 0 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; gap: 8px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: opacity 0.2s;
         }
-        .btn-primary:hover { background: var(--primary-hover); }
-        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
 
-        /* 结果列表 */
-        .result-list { display: flex; flex-direction: column; gap: 1rem; }
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .btn-primary:disabled {
+            background: #a5a5a5;
+            cursor: not-allowed;
+        }
+
+        /* --- 结果展示区 --- */
+        .result-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
         .result-item {
-            padding: 1rem; border: 1px solid var(--border-color); border-radius: 8px; background: #fff; transition: transform 0.2s, box-shadow 0.2s; position: relative; cursor: pointer;
+            padding: 16px;
+            background: #f9fafb;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 15px;
+            line-height: 1.5;
+            position: relative;
         }
-        .result-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-color: var(--primary); }
-        .copy-hint { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); font-size: 0.8rem; color: var(--primary); opacity: 0; transition: opacity 0.2s; }
-        .result-item:hover .copy-hint { opacity: 1; }
 
-        /* 底部对标拆解模块 (优化版) */
-        .benchmark-section { margin-top: 3rem; border-top: 1px solid var(--border-color); padding-top: 2rem; }
-        .benchmark-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; color: var(--text-main); font-weight: 600; }
-        .benchmark-desc { font-size: 0.9rem; color: var(--text-sub); margin-bottom: 1rem; }
-        .benchmark-input-group { display: flex; gap: 0.5rem; }
-        .btn-secondary { background: white; border: 1px solid var(--border-color); color: var(--text-main); padding: 0 16px; border-radius: 8px; cursor: pointer; font-weight: 500; }
-        .btn-secondary:hover { background: #f8fafc; border-color: var(--text-sub); }
-
-        /* 加载动画 */
-        .spinner { animation: spin 1s linear infinite; width: 16px; height: 16px; border: 2px solid #ffffff; border-top-color: transparent; border-radius: 50%; display: none; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* 响应式 */
-        @media (max-width: 600px) {
-            .input-group, .benchmark-input-group { flex-direction: column; }
-            .btn-primary, .btn-secondary { width: 100%; justify-content: center; padding: 12px; }
+        .loading-text {
+            text-align: center;
+            color: var(--text-sub);
+            padding: 20px;
         }
+
+        /* --- 下半部分：对标拆解 --- */
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-desc {
+            font-size: 13px;
+            color: var(--text-sub);
+            margin-bottom: 16px;
+        }
+
+        .competitor-result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f0fdf4; /* 浅绿色背景表示成功 */
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            color: #166534;
+            display: none; /* 默认隐藏 */
+        }
+
+        .error-msg {
+            color: #dc2626;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+
     </style>
 </head>
 <body>
 
+<div class="container">
+    <!-- 顶部标题 -->
     <header>
-        <div class="logo"><i class="fas fa-rocket"></i> Title Rocket Pro</div>
-        <div class="user-info">
-            <span>987270446@qq.com</span>
-            <div class="avatar">9</div>
-            <a href="#" style="color: var(--text-sub); text-decoration: none;">退出</a>
-        </div>
+        <h1>AI 爆款标题生成器</h1>
+        <p class="subtitle">DeepSeek 驱动 · 多平台适配 · 一键生成高点击率标题</p>
     </header>
 
-    <main>
-        <div class="hero-title">
-            <h1>AI 爆款标题生成器</h1>
-            <p>DeepSeek 驱动 · 多平台适配 · 一键生成高点击率标题</p>
+    <!-- 上半部分：标题生成 -->
+    <div class="card">
+        <!-- 平台切换 -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchPlatform('xhs')">📕 小红书</button>
+            <button class="tab-btn" onclick="switchPlatform('dy')">🎵 抖音</button>
         </div>
 
-        <div class="card">
-            <!-- 平台切换 -->
-            <div class="platform-tabs">
-                <button class="tab-btn active" onclick="switchPlatform('xhs')">
-                    <i class="fab fa-xiaohongshu xhs-icon"></i> 小红书
-                </button>
-                <button class="tab-btn" onclick="switchPlatform('dy')">
-                    <i class="fab fa-tiktok dy-icon"></i> 抖音
-                </button>
-            </div>
-
-            <!-- 输入框 -->
-            <div class="input-group">
-                <input type="text" id="keywordInput" placeholder="输入关键词，例如：减肥、穿搭、职场..." value="减肥">
-                <button class="btn-primary" id="generateBtn" onclick="generateTitles()">
-                    <div class="spinner" id="loadingSpinner"></div>
-                    <span id="btnText"><i class="fas fa-magic"></i> AI 生成</span>
-                </button>
-            </div>
-
-            <!-- 结果展示区 -->
-            <div class="result-list" id="resultList">
-                <!-- 默认占位或初始数据 -->
-                <div class="result-item" onclick="copyText(this)">
-                    坚持半个月瘦10斤🔥懒人减肥法
-                    <span class="copy-hint">点击复制</span>
-                </div>
-                <div class="result-item" onclick="copyText(this)">
-                    一周掉秤5斤‼️不节食减肥秘诀
-                    <span class="copy-hint">点击复制</span>
-                </div>
-                <div class="result-item" onclick="copyText(this)">
-                    减脂必看💥这招让你越吃越瘦
-                    <span class="copy-hint">点击复制</span>
-                </div>
-            </div>
+        <!-- 输入框 -->
+        <div class="input-group">
+            <!-- 注意：这里必须加上 id="keyword" -->
+            <input type="text" id="keyword" placeholder="请输入关键词，例如：减肥、学英语..." value="减肥餐">
+            <button class="btn-primary" id="generateBtn" onclick="generateTitles()">
+                ✨ AI 生成
+            </button>
         </div>
 
-        <!-- 底部：爆款对标拆解 -->
-        <div class="benchmark-section">
-            <div class="benchmark-header">
-                <i class="fas fa-search-dollar" style="color: var(--primary);"></i> 爆款对标拆解
-            </div>
-            <p class="benchmark-desc">输入领域关键词，系统将自动抓取全网热门视频标题，并分析爆点。</p>
-            <div class="benchmark-input-group">
-                <input type="text" id="competitorKeyword" placeholder="输入对标关键词..." value="减肥">
-                <button class="btn-secondary" onclick="analyzeCompetitors()" id="searchMaterialBtn">
-                    搜索热门素材
-                </button>
-            </div>
-            <!-- 这里可以预留一个显示搜索结果的地方，目前先只做触发逻辑 -->
-            <div id="materialResult" style="margin-top: 1rem; font-size: 0.9rem; color: var(--success);"></div>
+        <!-- 结果列表 -->
+        <div id="results" class="result-list">
+            <!-- 初始占位内容 -->
+            <div class="result-item">【模拟】减肥爆款标题1：3秒学会的懒人秘籍！</div>
+            <div class="result-item">【模拟】减肥这样写，流量直接翻倍！</div>
+            <div class="result-item">【模拟】别再瞎写了！减肥高点击公式</div>
         </div>
-    </main>
+    </div>
 
-    <script>
+    <!-- 下半部分：对标拆解 -->
+    <div class="card">
+        <div class="section-title">🔍 爆款对标拆解</div>
+        <p class="section-desc">输入领域关键词，系统将自动抓取全网热门视频标题，并分析爆点。</p>
+
+        <div class="input-group">
+            <!-- 注意：这里必须加上 id="competitorKeyword" -->
+            <input type="text" id="competitorKeyword" placeholder="输入想要对标的领域..." value="减肥">
+            <button class="btn-primary" style="background-color: #fff; color: #333; border: 1px solid #ddd;" onclick="analyzeCompetitors()">
+                搜索热门素材
+            </button>
+        </div>
+
+        <!-- 结果反馈 -->
+        <div id="competitorResult" class="competitor-result"></div>
+        <div id="competitorError" class="error-msg"></div>
+    </div>
+</div>
+
+<script>
     // ================= 核心配置 =================
     const WORKER_API_URL = 'https://title-rocket.li987270446.workers.dev';
     let currentPlatform = 'xhs'; // 默认小红书
@@ -180,185 +252,139 @@
         currentPlatform = platform;
         const tabs = document.querySelectorAll('.tab-btn');
         tabs.forEach(tab => tab.classList.remove('active'));
+
+        // 简单的视觉切换逻辑
         if (platform === 'xhs') {
             tabs[0].classList.add('active');
-            document.getElementById('keyword-input').placeholder = "输入关键词，例如：减肥、穿搭...";
         } else {
             tabs[1].classList.add('active');
-            document.getElementById('keyword-input').placeholder = "输入抖音热门话题...";
         }
+        console.log("当前平台切换为:", platform);
     }
 
-    // ================= 功能 1：AI 生成标题 =================
+    // ================= 功能 1：生成标题 =================
     async function generateTitles() {
-        const keyword = document.getElementById('keyword-input').value.trim();
-        const resultsContainer = document.getElementById('results-container');
+        const keywordInput = document.getElementById('keyword');
+        const resultsDiv = document.getElementById('results');
+        const btn = document.getElementById('generateBtn');
+
+        const keyword = keywordInput.value.trim();
 
         if (!keyword) {
-            alert("请输入关键词！");
+            alert('请先输入关键词！');
             return;
         }
 
-        // UI 状态更新：显示加载中
-        const btn = document.querySelector('.btn-primary');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '⏳ 生成中...';
+        // UI 状态更新：加载中
         btn.disabled = true;
-        resultsContainer.innerHTML = '<div class="loading">正在思考爆款逻辑...</div>';
+        btn.innerHTML = '⏳ 生成中...';
+        resultsDiv.innerHTML = '<div class="loading-text">正在调用 DeepSeek 模型思考中...</div>';
 
         try {
-            // 【关键修改】统一使用 GET 请求，参数拼接在 URL 后面
-            // 这样能避免很多跨域或 Body 解析的问题
+            // 构建 GET 请求 URL
             const url = `${WORKER_API_URL}/search?q=${encodeURIComponent(keyword)}&platform=${currentPlatform}`;
 
-            console.log("正在请求生成标题:", url);
-
             const response = await fetch(url, {
-                method: 'GET', // 强制 GET
+                method: 'GET', // 强制使用 GET
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Accept': 'application/json'
                 }
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error(`API 请求失败: ${response.status}`);
             }
 
             const data = await response.json();
 
             // 渲染结果
-            resultsContainer.innerHTML = ''; // 清空加载提示
-
-            if (data.titles && data.titles.length > 0) {
-                data.titles.forEach((title, index) => {
-                    const card = document.createElement('div');
-                    card.className = 'result-card';
-                    // 为了演示效果，这里加个简单的动画延迟
-                    card.style.animation = `fadeIn 0.5s ease forwards ${index * 0.1}s`;
-                    card.innerHTML = `
-                        <div class="card-header">
-                            <span class="tag">【模拟】</span>
-                            <span class="score">点击率预测: ${(Math.random() * (15 - 5) + 5).toFixed(1)}%</span>
-                        </div>
-                        <h3>${title}</h3>
-                        <div class="card-actions">
-                            <button onclick="copyText('${title.replace(/'/g, "\\'")}')">📋 复制</button>
-                            <button onclick="alert('已收藏')">⭐ 收藏</button>
-                        </div>
-                    `;
-                    resultsContainer.appendChild(card);
-                });
+            // 假设后端返回的是 { titles: ["标题1", "标题2"] } 或者是一个数组
+            // 如果后端返回格式不同，请在这里调整
+            let titles = [];
+            if (Array.isArray(data)) {
+                titles = data;
+            } else if (data.titles && Array.isArray(data.titles)) {
+                titles = data.titles;
             } else {
-                resultsContainer.innerHTML = '<p style="color:#666; text-align:center;">未生成有效标题，请重试。</p>';
+                // 兼容处理：如果返回的是个对象但没 titles 字段，尝试把整个对象转字符串显示，方便调试
+                titles = [JSON.stringify(data)];
+            }
+
+            if (titles.length === 0) {
+                resultsDiv.innerHTML = '<div class="loading-text">未生成有效标题，请重试。</div>';
+            } else {
+                resultsDiv.innerHTML = titles.map(t => `<div class="result-item">${t}</div>`).join('');
             }
 
         } catch (error) {
-            console.error("生成失败:", error);
-            resultsContainer.innerHTML = `<p style="color:red; text-align:center;">生成出错: ${error.message}</p>`;
+            console.error(error);
+            resultsDiv.innerHTML = `<div class="loading-text" style="color:red">❌ 生成失败: ${error.message}</div>`;
         } finally {
             // 恢复按钮状态
-            btn.innerHTML = originalText;
             btn.disabled = false;
+            btn.innerHTML = '✨ AI 生成';
         }
     }
 
-    // ================= 功能 2：爆款对标拆解 =================
+    // ================= 功能 2：对标拆解 =================
     async function analyzeCompetitors() {
-        const keyword = document.getElementById('competitor-keyword').value.trim();
-        const analysisResult = document.getElementById('analysis-result');
+        const kwInput = document.getElementById('competitorKeyword');
+        const resultBox = document.getElementById('competitorResult');
+        const errorBox = document.getElementById('competitorError');
+
+        const keyword = kwInput.value.trim();
 
         if (!keyword) {
-            alert("请输入对标关键词！");
+            alert('请输入对标关键词');
             return;
         }
 
         // UI 状态更新
-        const btn = document.querySelector('.btn-secondary'); // 假设第二个按钮是这个类名，如果不是请检查HTML
-        // 注意：如果你的HTML里第二个按钮没有class，可能需要通过ID获取，这里假设它叫 search-btn 或者类似
-        // 为了保险，我直接用 querySelector 找那个按钮
-        const searchBtn = document.querySelector('button[onclick="analyzeCompetitors()"]');
-
-        if(searchBtn) {
-             searchBtn.innerHTML = '🔍 分析中...';
-             searchBtn.disabled = true;
-        }
-
-        analysisResult.innerHTML = '<div class="loading">正在全网抓取数据...</div>';
+        resultBox.style.display = 'none';
+        errorBox.style.display = 'none';
+        errorBox.innerText = '正在搜索全网热门素材...';
+        errorBox.style.color = '#666'; // 用灰色文字显示加载状态
+        errorBox.style.display = 'block';
 
         try {
-            // 【关键修改】同样使用 GET 请求
-            const url = `${WORKER_API_URL}/analyze?keyword=${encodeURIComponent(keyword)}`;
-
-            console.log("正在请求对标分析:", url);
+            // 同样使用 GET 请求
+            const url = `${WORKER_API_URL}/search?q=${encodeURIComponent(keyword)}&type=competitor`;
 
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Accept': 'application/json'
                 }
             });
 
             if (!response.ok) {
-                throw new Error(`API 请求失败 (${response.status})`);
+                throw new Error(`服务器响应错误: ${response.status}`);
             }
 
             const data = await response.json();
 
-            // 渲染分析结果
-            // 注意：这里需要后端返回特定的 JSON 结构，比如 { summary: "...", tags: [...] }
-            // 如果后端还没写好这个接口，这里会报错。
-            // 为了演示，我先写一个通用的渲染逻辑
+            // 显示成功结果
+            errorBox.style.display = 'none'; // 隐藏加载/错误提示
+            resultBox.style.display = 'block';
 
-            let htmlContent = `
-                <div class="analysis-box">
-                    <h4>🔥 热门趋势分析</h4>
-                    <p><strong>核心痛点：</strong> ${data.pain_point || "用户主要关注快速见效和低成本方案"}</p>
-                    <p><strong>情绪钩子：</strong> ${data.emotion_hook || "焦虑感 + 获得感"}</p>
-                    <div class="tags-cloud">
-                        ${ (data.tags || ["低卡", "不反弹", "学生党"]).map(tag => `<span class="tag-pill">${tag}</span>`).join('') }
-                    </div>
-                </div>
-                <div class="video-list">
-                    <h4>🎬 对标视频拆解</h4>
-                    ${ (data.videos || []).map(v => `
-                        <div class="video-item">
-                            <span class="play-icon">▶</span>
-                            <div class="video-info">
-                                <div class="video-title">${v.title || "示例视频标题：我是如何一个月瘦10斤的？"}</div>
-                                <div class="video-stats">点赞: ${v.likes || "1.2w"} | 评论: ${v.comments || "300+"}</div>
-                            </div>
-                        </div>
-                    `).join('') }
-                </div>
-            `;
-
-            // 如果后端返回的数据很简单，只是文本，就只显示文本
-            if (typeof data === 'string') {
-                 htmlContent = `<p>${data}</p>`;
+            // 格式化显示数据
+            let content = "";
+            if (typeof data === 'object') {
+                content = JSON.stringify(data, null, 2); // 格式化 JSON 显示
+            } else {
+                content = data;
             }
 
-            analysisResult.innerHTML = htmlContent;
+            resultBox.innerHTML = `<strong>✅ 搜索成功：</strong><br><pre style="white-space: pre-wrap; font-family: monospace;">${content}</pre>`;
 
         } catch (error) {
-            console.error("分析失败:", error);
-            analysisResult.innerHTML = `<p style="color:red;">❌ 搜索出错: ${error.message}</p>`;
-        } finally {
-             const searchBtn = document.querySelector('button[onclick="analyzeCompetitors()"]');
-             if(searchBtn) {
-                searchBtn.innerHTML = '🔍 搜索热门素材';
-                searchBtn.disabled = false;
-             }
+            console.error(error);
+            errorBox.style.display = 'block';
+            errorBox.style.color = '#dc2626'; // 红色报错
+            errorBox.innerText = `❌ 搜索出错: ${error.message}`;
         }
     }
-
-    // 辅助功能：复制文本
-    function copyText(text) {
-        navigator.clipboard.writeText(text).then(() => {
-            alert('复制成功！');
-        }).catch(err => {
-            console.error('无法复制', err);
-        });
-    }
 </script>
+
 </body>
 </html>
