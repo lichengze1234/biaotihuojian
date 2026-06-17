@@ -171,139 +171,145 @@
     </main>
 
     <script>
-        // ================= 核心配置 =================
-        // 这里的地址已经替换为你提供的地址
-        const WORKER_API_URL = 'https://title-rocket.li987270446.workers.dev';
-        let currentPlatform = 'xhs'; // 默认小红书
+  // ================= 核心配置 =================
+  // 这里的地址已经替换为你提供的地址
+  const WORKER_API_URL = 'https://title-rocket.li987270446.workers.dev';
+  let currentPlatform = 'xhs'; // 默认小红书
 
-        // 切换平台逻辑
-        function switchPlatform(platform) {
-            currentPlatform = platform;
-            const tabs = document.querySelectorAll('.tab-btn');
-            tabs.forEach(tab => tab.classList.remove('active'));
+  // 切换平台逻辑
+  function switchPlatform(platform) {
+    currentPlatform = platform;
+    const tabs = document.querySelectorAll('.tab-btn');
+    tabs.forEach(tab => tab.classList.remove('active'));
+    if (platform === 'xhs') {
+      tabs[0].classList.add('active');
+      document.getElementById('keywordInput').placeholder = "输入小红书关键词...";
+    } else {
+      tabs[1].classList.add('active');
+      document.getElementById('keywordInput').placeholder = "输入抖音关键词...";
+    }
+  }
 
-            if (platform === 'xhs') {
-                tabs[0].classList.add('active');
-                document.getElementById('keywordInput').placeholder = "输入小红书关键词...";
-            } else {
-                tabs[1].classList.add('active');
-                document.getElementById('keywordInput').placeholder = "输入抖音关键词...";
-            }
-            // 切换时可以清空结果或重新生成，这里暂不清空
+  // 生成标题逻辑 (已修复：改为 GET 请求以匹配 Worker)
+  async function generateTitles() {
+    const keyword = document.getElementById('keywordInput').value.trim();
+    if (!keyword) return alert('请输入关键词');
+
+    const btn = document.getElementById('generateBtn');
+    const spinner = document.getElementById('loadingSpinner');
+    const btnText = document.getElementById('btnText');
+    const resultList = document.getElementById('resultList');
+
+    // UI 状态更新：加载中
+    btn.disabled = true;
+    spinner.style.display = 'block';
+    btnText.innerHTML = '生成中...';
+    resultList.innerHTML = ''; // 清空旧结果
+
+    try {
+      // ✅ 修改点：改为 GET 请求，并将参数拼接到 URL 上
+      const response = await fetch(`${WORKER_API_URL}/search?q=${encodeURIComponent(keyword)}`, {
+        method: 'GET', // 改为 GET
+        headers: {
+          'Content-Type': 'application/json'
         }
+      });
 
-        // 生成标题逻辑
-        async function generateTitles() {
-            const keyword = document.getElementById('keywordInput').value.trim();
-            if (!keyword) return alert('请输入关键词');
+      if (!response.ok) throw new Error('网络请求失败');
+      const data = await response.json();
 
-            const btn = document.getElementById('generateBtn');
-            const spinner = document.getElementById('loadingSpinner');
-            const btnText = document.getElementById('btnText');
-            const resultList = document.getElementById('resultList');
+      // ✅ 修改点：适配后端返回的 { status: "success", data: [...] } 格式
+      if (data.status === 'success' && data.data && data.data.length > 0) {
+        const titles = data.data.map(item => item.title);
+        
+        // 渲染结果
+        titles.forEach(title => {
+          const div = document.createElement('div');
+          div.className = 'result-item';
+          div.onclick = function() { copyText(this); };
+          div.innerHTML = `${title} <span class="copy-hint">点击复制</span>`;
+          resultList.appendChild(div);
+        });
+      } else {
+        // 如果后端返回空数据，显示模拟数据兜底
+        throw new Error('未获取到数据，显示模拟结果');
+      }
 
-            // UI 状态更新：加载中
-            btn.disabled = true;
-            spinner.style.display = 'block';
-            btnText.innerHTML = '生成中...';
-            resultList.innerHTML = ''; // 清空旧结果
+    } catch (error) {
+      console.error(error);
+      // 显示模拟数据兜底
+      const mockTitles = [
+        `【模拟】${keyword}爆款标题1：3秒学会的懒人秘籍！`,
+        `【模拟】${keyword}这样写，流量直接翻倍！`,
+        `【模拟】别再瞎写了！${keyword}高点击公式`
+      ];
+      mockTitles.forEach(title => {
+        const div = document.createElement('div');
+        div.className = 'result-item';
+        div.onclick = function() { copyText(this); };
+        div.innerHTML = `${title} <span class="copy-hint">点击复制</span>`;
+        resultList.appendChild(div);
+      });
+    } finally {
+      // 恢复按钮状态
+      btn.disabled = false;
+      spinner.style.display = 'none';
+      btnText.innerHTML = '<i class="fas fa-magic"></i> AI 生成';
+    }
+  }
 
-            try {
-                // 模拟 API 请求结构
-                const response = await fetch(WORKER_API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        keyword: keyword,
-                        platform: currentPlatform,
-                        action: 'generate_titles' // 告诉后端这是生成标题的动作
-                    })
-                });
+  // 搜索素材逻辑 (已修复：改为 GET 请求)
+  async function analyzeCompetitors() {
+    const keyword = document.getElementById('competitorKeyword').value.trim();
+    const btn = document.getElementById('searchMaterialBtn');
+    const resultDiv = document.getElementById('materialResult');
+    
+    if (!keyword) return alert('请输入对标关键词');
 
-                if (!response.ok) throw new Error('网络请求失败');
+    btn.innerText = '搜索中...';
+    btn.disabled = true;
+    resultDiv.innerHTML = '';
 
-                const data = await response.json();
-
-                // 假设后端返回格式为 { titles: ["标题1", "标题2", ...] }
-                // 如果后端返回格式不同，需要在这里调整
-                const titles = data.titles || [
-                    "模拟数据：因为API未连接显示的测试标题1",
-                    "模拟数据：请检查Worker地址是否正确",
-                    `模拟数据：${currentPlatform === 'xhs' ? '小红书' : '抖音'}风格-${keyword}`
-                ];
-
-                // 渲染结果
-                titles.forEach(title => {
-                    const div = document.createElement('div');
-                    div.className = 'result-item';
-                    div.onclick = function() { copyText(this); };
-                    div.innerHTML = `${title} <span class="copy-hint">点击复制</span>`;
-                    resultList.appendChild(div);
-                });
-
-            } catch (error) {
-                console.error(error);
-                resultList.innerHTML = `<div style="color:red; text-align:center;">生成失败，请检查控制台或Worker配置。<br>错误信息: ${error.message}</div>`;
-            } finally {
-                // 恢复按钮状态
-                btn.disabled = false;
-                spinner.style.display = 'none';
-                btnText.innerHTML = '<i class="fas fa-magic"></i> AI 生成';
-            }
+    try {
+      // ✅ 修改点：改为 GET 请求
+      const response = await fetch(`${WORKER_API_URL}/search?q=${encodeURIComponent(keyword)}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
         }
+      });
 
-        // 搜索素材逻辑 (你之前遇到的那个问题)
-        async function analyzeCompetitors() {
-            const keyword = document.getElementById('competitorKeyword').value.trim();
-            const btn = document.getElementById('searchMaterialBtn');
-            const resultDiv = document.getElementById('materialResult');
+      if (!response.ok) throw new Error('搜索失败');
+      const data = await response.json();
 
-            if (!keyword) return alert('请输入对标关键词');
+      // ✅ 修改点：解析返回的数据
+      if (data.status === 'success' && data.data) {
+         resultDiv.innerHTML = `✅ 成功获取关于“${keyword}”的 ${data.data.length} 条热门素材！`;
+      } else {
+         resultDiv.innerHTML = `⚠️ 获取成功，但暂无数据。`;
+      }
 
-            btn.innerText = '搜索中...';
-            btn.disabled = true;
-            resultDiv.innerHTML = '';
+    } catch (error) {
+      resultDiv.innerHTML = `❌ 搜索出错: ${error.message}`;
+    } finally {
+      btn.innerText = '搜索热门素材';
+      btn.disabled = false;
+    }
+  }
 
-            try {
-                // 调用同一个 Worker 地址，但 action 不同
-                const response = await fetch(WORKER_API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        keyword: keyword,
-                        action: 'search_materials' // 告诉后端这是搜索素材的动作
-                    })
-                });
-
-                if (!response.ok) throw new Error('搜索失败');
-
-                const data = await response.json();
-
-                // 假设后端返回 { message: "找到xx条素材..." } 或者具体的素材列表
-                // 这里做一个简单的展示演示
-                resultDiv.innerHTML = `✅ 成功获取关于“${keyword}”的热门素材分析！(模拟成功状态)`;
-
-            } catch (error) {
-                resultDiv.innerHTML = `❌ 搜索出错: ${error.message}`;
-            } finally {
-                btn.innerText = '搜索热门素材';
-                btn.disabled = false;
-            }
-        }
-
-        // 复制功能
-        function copyText(element) {
-            const text = element.innerText.replace('点击复制', '').trim();
-            navigator.clipboard.writeText(text).then(() => {
-                const originalBg = element.style.background;
-                element.style.background = '#ecfdf5'; // 浅绿色背景提示成功
-                element.style.borderColor = '#10b981';
-                setTimeout(() => {
-                    element.style.background = originalBg;
-                    element.style.borderColor = '';
-                }, 500);
-            });
-        }
-    </script>
+  // 复制功能
+  function copyText(element) {
+    const text = element.innerText.replace('点击复制', '').trim();
+    navigator.clipboard.writeText(text).then(() => {
+      const originalBg = element.style.background;
+      element.style.background = '#ecfdf5'; // 浅绿色背景提示成功
+      element.style.borderColor = '#10b981';
+      setTimeout(() => {
+        element.style.background = originalBg;
+        element.style.borderColor = '';
+      }, 500);
+    });
+  }
+</script>
 </body>
 </html>
