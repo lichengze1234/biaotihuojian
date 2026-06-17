@@ -72,6 +72,25 @@
         </div>
 
         <div class="results" id="resultsContainer"></div>
+        <!-- 爆款对标拆解模块 -->
+<div class="card" style="margin: 20px; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff;">
+  <h3>🔍 爆款对标拆解</h3>
+  <p style="font-size: 0.9em; color: #666;">输入领域关键词，系统将自动抓取全网热门视频标题，并分析爆点</p>
+  
+  <div class="input-group" style="margin-top: 15px;">
+    <input type="text" id="competitorKeyword" placeholder="例如：减脂餐、Python教程、职场干货...">
+    <button class="generate" onclick="analyzeCompetitors()" id="analyzeBtn">搜索热门素材</button>
+  </div>
+
+  <!-- 抓取到的素材展示区 -->
+  <div id="materialList" style="display:none; margin-top: 15px;"></div>
+  
+  <!-- 基于素材生成按钮 -->
+  <button onclick="generateFromMaterial()" id="genFromMatBtn" 
+          style="display:none; margin-top: 10px; background:#6366f1; color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer;">
+    ✨ 基于以上素材生成爆款标题
+  </button>
+</div>
     </main>
 
     <!-- 登录/注册弹窗 -->
