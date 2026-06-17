@@ -107,6 +107,92 @@
     </div>
 
 <script>
+    // ================= 配置区域 =================
+    // 【请务必修改这里】填入你 Cloudflare Worker 的完整地址
+    const WORKER_API_URL = 'https://title-rocket.li987270446.workers.dev';
+    // ===========================================
+
+    let currentMaterials = []; // 用于存储抓取到的素材
+
+    // 1. 分析对标账号/关键词 (点击"搜索素材"时触发)
+    async function analyzeCompetitors() {
+        const keyword = document.getElementById('competitorKeyword').value;
+        const btn = document.getElementById('analyzeBtn');
+        const listDiv = document.getElementById('materialList');
+
+        if (!keyword) {
+            alert('请输入关键词！');
+            return;
+        }
+
+        // 按钮变灰，显示加载中
+        btn.disabled = true;
+        btn.innerText = '正在全网搜索...';
+        listDiv.innerHTML = '<p style="color:#666;">正在抓取数据，请稍候...</p>';
+        listDiv.style.display = 'block';
+
+        try {
+            // 发送请求给你的 Worker
+            // 注意：这里假设你的 Worker 接收 ?q=关键词
+            const response = await fetch(`${WORKER_API_URL}/search?q=${encodeURIComponent(keyword)}`);
+            const data = await response.json();
+
+            if (data.status === 'success' && data.data.length > 0) {
+                currentMaterials = data.data; // 保存数据
+                renderMaterials(data.data);   // 渲染列表
+            } else {
+                listDiv.innerHTML = '<p style="color:red;">未找到相关素材，请尝试其他关键词。</p>';
+            }
+        } catch (error) {
+            console.error(error);
+            listDiv.innerHTML = '<p style="color:red;">连接服务器失败，请检查 Worker 地址是否正确。</p>';
+        } finally {
+            // 恢复按钮状态
+            btn.disabled = false;
+            btn.innerText = '搜索素材';
+        }
+    }
+
+    // 2. 渲染素材列表到页面上
+    function renderMaterials(items) {
+        const listDiv = document.getElementById('materialList');
+        let html = '<ul style="list-style:none; padding:0; margin-bottom:15px;">';
+
+        items.forEach((item, index) => {
+            html += `
+                <li style="background:white; padding:10px; margin-bottom:8px; border-radius:4px; border:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:0.9em; color:#333;">${item.title}</span>
+                    <span style="font-size:0.8em; color:#888; margin-left:10px;">🔥 ${item.views || '热门'}</span>
+                </li>
+            `;
+        });
+        html += '</ul>';
+
+        // 添加一个“基于这些生成”的按钮
+        html += `
+            <button onclick="generateFromMaterial()" id="genFromMatBtn"
+                style="width:100%; padding:12px; background:#2ecc71; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">
+                ✨ 基于以上爆款标题生成新文案
+            </button>
+        `;
+
+        listDiv.innerHTML = html;
+    }
+
+    // 3. 基于素材生成 (点击绿色大按钮时触发)
+    function generateFromMaterial() {
+        if (currentMaterials.length === 0) return;
+
+        // 这里可以对接你原有的生成逻辑
+        // 比如把 currentMaterials 拼接到 prompt 里发给 AI
+        alert('功能开发中：即将把这 ' + currentMaterials.length + ' 个爆款标题发送给 AI 进行仿写！');
+
+        // 示例：如果你想把这些标题填入原来的输入框，可以这样写：
+        // const titles = currentMaterials.map(m => m.title).join('\n');
+        // document.getElementById('promptInput').value = "请参考以下爆款标题风格进行创作：\n" + titles;
+    }
+</script>
+    <script>
     // ========== 本地用户系统（保持不变）==========
     const USERS_KEY = 'trp_users';
     const SESSION_KEY = 'trp_session';
