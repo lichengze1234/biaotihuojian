@@ -5,61 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Title Rocket Pro - AI 爆款标题生成器</title>
     <style>
-        /* --- 基础样式 (保持不变) --- */
         :root { --primary: #4f46e5; --bg: #f3f4f6; --card-bg: #fff; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #1f2937; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #1f2937; }
         .container { max-width: 800px; margin: 0 auto; }
         .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { margin: 0; font-size: 24px; }
-        .header p { color: #6b7280; font-size: 14px; margin-top: 5px; }
+        .header h1 { margin: 0; font-size: 26px; font-weight: 800; color: #111827; }
+        .header p { color: #6b7280; font-size: 14px; margin-top: 6px; }
 
-        .card { background: var(--card-bg); border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .card { background: var(--card-bg); border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); margin-bottom: 20px; }
 
         /* 标签页 */
         .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tab-btn { padding: 8px 16px; border-radius: 20px; border: 1px solid #e5e7eb; background: transparent; cursor: pointer; font-weight: 500; transition: all 0.2s; }
+        .tab-btn { padding: 8px 18px; border-radius: 20px; border: 1px solid #e5e7eb; background: transparent; cursor: pointer; font-weight: 500; transition: all 0.2s; font-size: 14px; }
         .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
         /* 输入框组 */
         .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
-        input[type="text"] { flex: 1; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; outline: none; font-size: 16px; }
-        input[type="text"]:focus { border-color: var(--primary); ring: 2px solid rgba(79, 70, 229, 0.2); }
+        input[type="text"] { flex: 1; padding: 12px 16px; border: 1px solid #e5e7eb; border-radius: 8px; outline: none; font-size: 15px; transition: all 0.2s; }
+        input[type="text"]:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15); }
 
         /* 按钮 */
-        .btn-primary { background: var(--primary); color: white; border: none; padding: 0 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; white-space: nowrap; }
-        .btn-primary:hover { opacity: 0.9; }
-        .btn-primary:disabled { background: #9ca3af; cursor: not-allowed; }
+        .btn-primary { background: var(--primary); color: white; border: none; padding: 0 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; font-size: 15px; }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-primary:disabled { background: #9ca3af; cursor: not-allowed; transform: none; }
 
         /* 结果区域 */
-        .result-area { min-height: 100px; }
-        .loading { text-align: center; color: #6b7280; padding: 20px; }
-        .error-msg { color: #ef4444; text-align: center; padding: 10px; background: #fef2f2; border-radius: 6px; }
+        .result-area { min-height: 50px; }
+        .loading { text-align: center; color: #6b7280; padding: 30px; font-size: 14px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .error-msg { color: #ef4444; text-align: center; padding: 12px; background: #fef2f2; border-radius: 8px; border: 1px solid #fee2e2; font-size: 14px; }
 
         /* 标题列表卡片 */
-        .title-item { border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; transition: transform 0.2s; }
-        .title-item:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .title-text { font-weight: 500; font-size: 15px; }
-        .views-tag { background: #fee2e2; color: #ef4444; font-size: 12px; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
+        .title-item { border: 1px solid #e5e7eb; padding: 16px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; gap: 15px; transition: all 0.2s; background: #fff; }
+        .title-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-color: #cbd5e1; }
+        .title-main { flex: 1; }
+        .title-text { font-weight: 500; font-size: 15px; color: #1f2937; margin-bottom: 4px; }
+        .views-tag { display: inline-block; background: #fee2e2; color: #ef4444; font-size: 11px; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        
+        .copy-btn { background: #f3f4f6; border: 1px solid #e5e7eb; padding: 6px 12px; border-radius: 6px; font-size: 12px; color: #4b5563; cursor: pointer; transition: all 0.1s; }
+        .copy-btn:hover { background: #e5e7eb; color: #1f2937; }
 
         /* 对标拆解部分 */
-        .section-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .section-title { font-size: 18px; font-weight: bold; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; color: #111827; }
         .search-box { display: flex; gap: 10px; }
         .search-results { margin-top: 20px; }
-        .analysis-card { background: #f9fafb; border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
-        .analysis-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: bold; }
-        .analysis-body { font-size: 14px; color: #4b5563; line-height: 1.5; }
+        .analysis-card { background: #f9fafb; border: 1px solid #e5e7eb; padding: 16px; border-radius: 8px; margin-bottom: 12px; }
+        .analysis-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: bold; font-size: 15px; }
+        .analysis-body { font-size: 13px; color: #4b5563; line-height: 1.6; background: #fff; padding: 12px; border-radius: 6px; border: 1px solid #f1f5f9; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- 头部 -->
     <div class="header">
         <h1>AI 爆款标题生成器</h1>
         <p>DeepSeek 驱动 · 多平台适配 · 一键生成高点击率标题</p>
     </div>
 
-    <!-- 功能 1：AI 生成 -->
     <div class="card">
         <div class="tabs">
             <button class="tab-btn active" onclick="switchPlatform('xhs')">📕 小红书</button>
@@ -71,169 +72,123 @@
             <button id="generate-btn" class="btn-primary">✨ AI 生成</button>
         </div>
 
-        <div id="ai-result-container" class="result-area">
-            <!-- 结果将在这里显示 -->
-        </div>
+        <div id="ai-result-container" class="result-area"></div>
     </div>
 
-    <!-- 功能 2：爆款对标拆解 -->
     <div class="card">
         <div class="section-title">🔍 爆款对标拆解</div>
-        <p style="font-size: 13px; color: #6b7280; margin-bottom: 15px;">输入领域关键词，系统将自动抓取全网热门视频标题，并分析爆点。</p>
+        <p style="font-size: 13px; color: #6b7280; margin-bottom: 15px;">输入领域关键词，系统将自动调用 AI 检索全网热门视频标题并拆解爆点。</p>
 
         <div class="search-box">
-            <input type="text" id="search-keyword" placeholder="输入要分析的领域...">
+            <input type="text" id="search-keyword" placeholder="输入要分析的领域，例如：美妆、数码测评...">
             <button id="search-btn" class="btn-primary" style="background: #10b981;">搜索热门素材</button>
         </div>
 
-        <div id="search-result-container" class="search-results">
-            <!-- 搜索结果将在这里显示 -->
-        </div>
+        <div id="search-result-container" class="search-results"></div>
     </div>
 </div>
 
 <script>
-    // ================= 核心配置 =================
     const WORKER_API_URL = 'https://title-rocket.li987270446.workers.dev';
-    let currentPlatform = 'xhs'; // 默认小红书
+    let currentPlatform = 'xhs';
 
-    // 页面加载完成后执行
     document.addEventListener('DOMContentLoaded', () => {
-        console.log("系统已就绪，正在绑定按钮事件...");
-
-        // 1. 绑定 AI 生成按钮
         const genBtn = document.getElementById('generate-btn');
-        if (genBtn) {
-            genBtn.addEventListener('click', (e) => {
-                e.preventDefault(); // 阻止可能的表单提交
-                handleGenerate();
-            });
-        } else {
-            console.error("错误：找不到 ID 为 generate-btn 的按钮");
-        }
+        if (genBtn) genBtn.addEventListener('click', (e) => { e.preventDefault(); handleGenerate(); });
 
-        // 2. 绑定 搜索按钮
         const searchBtn = document.getElementById('search-btn');
-        if (searchBtn) {
-            searchBtn.addEventListener('click', (e) => {
-                e.preventDefault(); // 阻止可能的表单提交
-                handleSearch();
-            });
-        } else {
-            console.error("错误：找不到 ID 为 search-btn 的按钮");
-        }
+        if (searchBtn) searchBtn.addEventListener('click', (e) => { e.preventDefault(); handleSearch(); });
     });
 
-    // 切换平台逻辑
     window.switchPlatform = function(platform) {
         currentPlatform = platform;
         const tabs = document.querySelectorAll('.tab-btn');
         tabs.forEach(tab => tab.classList.remove('active'));
-        // 简单的逻辑判断哪个按钮被点击（根据文本内容或顺序）
         if (platform === 'xhs') tabs[0].classList.add('active');
         else tabs[1].classList.add('active');
     }
 
-    // ================= 功能 1：AI 生成逻辑 =================
     async function handleGenerate() {
         const keywordInput = document.getElementById('main-keyword');
         const resultContainer = document.getElementById('ai-result-container');
         const btn = document.getElementById('generate-btn');
         const keyword = keywordInput.value.trim();
 
-        if (!keyword) {
-            alert('请输入关键词！');
-            return;
-        }
+        if (!keyword) { alert('请输入关键词！'); return; }
 
-        // UI 状态更新
         btn.disabled = true;
         btn.innerText = '生成中...';
-        resultContainer.innerHTML = '<div class="loading">正在调用 DeepSeek 思考中...</div>';
+        resultContainer.innerHTML = '<div class="loading">⏳ DeepSeek 正在全力思考爆款密码...</div>';
 
         try {
-            // 发送请求到 Worker
             const response = await fetch(`${WORKER_API_URL}?action=generate&keyword=${encodeURIComponent(keyword)}&platform=${currentPlatform}`);
-
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
+            if (!response.ok) throw new Error(`HTTP 错误! 状态码: ${response.status}`);
             const data = await response.json();
 
             if (data.success && data.data) {
                 renderTitles(data.data);
             } else {
-                resultContainer.innerHTML = `<div class="error-msg">生成失败: ${data.message || '未知错误'}</div>`;
+                resultContainer.innerHTML = `<div class="error-msg">❌ 生成失败: ${data.message || '未知错误'}</div>`;
             }
         } catch (error) {
-            console.error(error);
-            resultContainer.innerHTML = `<div class="error-msg">网络请求失败: ${error.message}</div>`;
+            resultContainer.innerHTML = `<div class="error-msg">⚠️ 网络请求失败: ${error.message}</div>`;
         } finally {
             btn.disabled = false;
             btn.innerText = '✨ AI 生成';
         }
     }
 
-    // 渲染标题列表
     function renderTitles(titles) {
         const container = document.getElementById('ai-result-container');
-        container.innerHTML = ''; // 清空旧数据
+        container.innerHTML = ''; 
 
         titles.forEach(item => {
-            // 兼容处理：不管后端返回 title 还是 content
             const text = item.title || item.content || item.text || "无内容";
-            const views = item.views || "High";
+            const views = item.views || "99w+";
 
             const div = document.createElement('div');
             div.className = 'title-item';
             div.innerHTML = `
-                <div class="title-text">${text}</div>
-                <div class="views-tag">预估热度: ${views}</div>
+                <div class="title-main">
+                    <div class="title-text">${text}</div>
+                    <div class="views-tag">🔥 预估点击率: ${views}</div>
+                </div>
+                <button class="copy-btn" onclick="copyToClipboard('${text.replace(/'/g, "\\'")}', this)">复制</button>
             `;
             container.appendChild(div);
         });
     }
 
-    // ================= 功能 2：搜索对标逻辑 =================
     async function handleSearch() {
         const keywordInput = document.getElementById('search-keyword');
         const resultContainer = document.getElementById('search-result-container');
         const btn = document.getElementById('search-btn');
         const keyword = keywordInput.value.trim();
 
-        if (!keyword) {
-            alert('请输入要拆解的关键词！');
-            return;
-        }
+        if (!keyword) { alert('请输入要拆解的领域关键词！'); return; }
 
         btn.disabled = true;
-        btn.innerText = '搜索中...';
-        resultContainer.innerHTML = '<div class="loading">正在全网检索热门素材...</div>';
+        btn.innerText = '检索中...';
+        resultContainer.innerHTML = '<div class="loading">🔍 正在全网检索热门素材并进行深度拆解...</div>';
 
         try {
-            // 注意：这里假设你的 Worker 也支持 action=search
-            // 如果 Worker 还没写 search 逻辑，这里会报错或返回模拟数据
             const response = await fetch(`${WORKER_API_URL}?action=search&keyword=${encodeURIComponent(keyword)}`);
-
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
+            if (!response.ok) throw new Error(`HTTP 错误! 状态码: ${response.status}`);
             const data = await response.json();
 
             if (data.success && data.data) {
                 renderAnalysis(data.data);
             } else {
-                // 如果后端还没写好 search，这里为了演示不报错，显示提示
-                resultContainer.innerHTML = `<div class="error-msg">暂未找到相关素材，或后端搜索接口未配置。</div>`;
+                resultContainer.innerHTML = `<div class="error-msg">❌ 暂未找到相关素材，或后端搜索未返回数据。</div>`;
             }
         } catch (error) {
-            console.error(error);
-            resultContainer.innerHTML = `<div class="error-msg">搜索出错: ${error.message}</div>`;
+            resultContainer.innerHTML = `<div class="error-msg">⚠️ 搜索出错: ${error.message}</div>`;
         } finally {
             btn.disabled = false;
             btn.innerText = '搜索热门素材';
         }
     }
 
-    // 渲染分析结果
     function renderAnalysis(items) {
         const container = document.getElementById('search-result-container');
         container.innerHTML = '';
@@ -243,14 +198,30 @@
             div.className = 'analysis-card';
             div.innerHTML = `
                 <div class="analysis-header">
-                    <span>${item.title || '热门标题'}</span>
-                    <span style="color:#ef4444">🔥 ${item.views || '10w+'}</span>
+                    <span>📌 ${item.title || '热门案例'}</span>
+                    <span style="color:#ef4444">🔥 ${item.views || '10w+'} 赞</span>
                 </div>
                 <div class="analysis-body">
-                    <strong>爆点分析：</strong>${item.analysis || '该标题利用了用户痛点，结合了具体数字，极具吸引力。'}
+                    <strong>💡 核心爆点拆解：</strong>${item.analysis || '该标题利用了用户痛点，结合了具体数字，极具吸引力。'}
                 </div>
             `;
             container.appendChild(div);
+        });
+    }
+
+    window.copyToClipboard = function(text, btn) {
+        navigator.clipboard.writeText(text).then(() => {
+            const oldText = btn.innerText;
+            btn.innerText = '已复制！';
+            btn.style.background = '#10b981';
+            btn.style.color = '#fff';
+            setTimeout(() => {
+                btn.innerText = oldText;
+                btn.style.background = '#f3f4f6';
+                btn.style.color = '#4b5563';
+            }, 1500);
+        }).catch(err => {
+            alert('复制失败，请手动选择复制');
         });
     }
 </script>
