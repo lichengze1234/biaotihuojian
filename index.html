@@ -1,340 +1,5 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Title Rocket Pro 🚀 AI 爆款标题生成器</title>
-    <style>
-        :root { 
-            --primary: #6366f1; /* 靛蓝主色 */
-            --primary-hover: #4f46e5;
-            --secondary: #a855f7; /* 紫色渐变辅助 */
-            --bg: #f8fafc; 
-            --card-bg: rgba(255, 255, 255, 0.9); 
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-        }
-        
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; 
-            background: var(--bg); 
-            background-image: 
-                radial-gradient(at 0% 0%, hsla(253,16%,7%,0.03) 0, transparent 50%), 
-                radial-gradient(at 50% 0%, hsla(225,39%,30%,0.03) 0, transparent 50%), 
-                radial-gradient(at 100% 0%, hsla(339,49%,30%,0.03) 0, transparent 50%);
-            margin: 0; 
-            padding: 40px 20px; 
-            color: var(--text-main); 
-            min-height: 100vh;
-        }
-
-        .container { 
-            max-width: 760px; 
-            margin: 0 auto; 
-        }
-
-        /* 头部标题区 */
-        .header { 
-            text-align: center; 
-            margin-bottom: 40px; 
-            animation: fadeInDown 0.8s ease-out;
-        }
-        .header h1 { 
-            margin: 0; 
-            font-size: 32px; 
-            font-weight: 900; 
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -0.5px;
-        }
-        .header p { 
-            color: var(--text-muted); 
-            font-size: 15px; 
-            margin-top: 12px; 
-            font-weight: 500;
-        }
-
-        /* 卡片容器 (带玻璃拟物感) */
-        .card { 
-            background: var(--card-bg); 
-            backdrop-filter: blur(10px);
-            border-radius: 20px; 
-            padding: 32px; 
-            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08); 
-            border: 1px solid rgba(255,255,255,0.6);
-            margin-bottom: 30px; 
-            transition: transform 0.3s ease;
-        }
-        .card:hover { transform: translateY(-2px); }
-
-        /* 标签页 */
-        .tabs { 
-            display: flex; 
-            gap: 12px; 
-            margin-bottom: 24px; 
-            background: #f1f5f9;
-            padding: 6px;
-            border-radius: 100px;
-            width: fit-content;
-        }
-        .tab-btn { 
-            padding: 10px 24px; 
-            border-radius: 100px; 
-            border: none; 
-            background: transparent; 
-            cursor: pointer; 
-            font-weight: 600; 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            font-size: 14px; 
-            color: var(--text-muted);
-        }
-        .tab-btn.active { 
-            background: white; 
-            color: var(--primary); 
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
-        }
-
-        /* 输入框组 */
-        .input-group { display: flex; gap: 12px; margin-bottom: 24px; }
-        input[type="text"] { 
-            flex: 1; 
-            padding: 14px 20px; 
-            border: 2px solid #e2e8f0; 
-            border-radius: 12px; 
-            outline: none; 
-            font-size: 15px; 
-            transition: all 0.3s; 
-            background: #f8fafc;
-        }
-        input[type="text"]:focus { 
-            border-color: var(--primary); 
-            background: white;
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15); 
-        }
-
-        /* 主按钮 */
-        .btn-primary { 
-            background: linear-gradient(135deg, var(--primary), var(--secondary)); 
-            color: white; 
-            border: none; 
-            padding: 0 28px; 
-            border-radius: 12px; 
-            font-weight: 600; 
-            cursor: pointer; 
-            transition: all 0.3s; 
-            white-space: nowrap; 
-            font-size: 16px; 
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-        }
-        .btn-primary:hover { 
-            opacity: 0.9; 
-            transform: translateY(-2px); 
-            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
-        }
-        .btn-primary:active { transform: translateY(0); }
-        .btn-primary:disabled { 
-            background: #cbd5e1; 
-            cursor: not-allowed; 
-            transform: none; 
-            box-shadow: none;
-        }
-
-        /* 绿色按钮特殊样式 */
-        .btn-green {
-            background: linear-gradient(135deg, #10b981, #059669);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-        }
-        .btn-green:hover {
-            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
-        }
-
-        /* 状态与提示 */
-        .loading { 
-            text-align: center; 
-            color: var(--primary); 
-            padding: 40px; 
-            font-size: 15px; 
-            font-weight: 500;
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            gap: 10px; 
-            animation: pulse 2s infinite;
-        }
-        .error-msg { 
-            color: #ef4444; 
-            text-align: center; 
-            padding: 16px; 
-            background: #fef2f2; 
-            border-radius: 12px; 
-            border: 1px solid #fecaca; 
-            font-size: 14px; 
-            font-weight: 500;
-        }
-
-        /* 生成标题卡片 */
-        .title-item { 
-            border: 2px solid #f1f5f9; 
-            padding: 20px; 
-            border-radius: 16px; 
-            margin-bottom: 16px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            gap: 20px; 
-            transition: all 0.3s; 
-            background: white; 
-        }
-        .title-item:hover { 
-            transform: translateY(-3px) scale(1.01); 
-            box-shadow: 0 12px 24px rgba(0,0,0,0.06); 
-            border-color: #e2e8f0; 
-        }
-        .title-main { flex: 1; }
-        .title-text { 
-            font-weight: 600; 
-            font-size: 16px; 
-            color: var(--text-main); 
-            margin-bottom: 8px; 
-            line-height: 1.4;
-        }
-        .views-tag { 
-            display: inline-block; 
-            background: #fff1f2; 
-            color: #e11d48; 
-            font-size: 12px; 
-            padding: 4px 10px; 
-            border-radius: 6px; 
-            font-weight: 700; 
-            border: 1px solid #ffe4e6;
-        }
-        .copy-btn { 
-            background: #f1f5f9; 
-            border: none; 
-            padding: 10px 18px; 
-            border-radius: 10px; 
-            font-size: 14px; 
-            font-weight: 600;
-            color: var(--text-muted); 
-            cursor: pointer; 
-            transition: all 0.2s; 
-        }
-        .copy-btn:hover { background: #e2e8f0; color: var(--text-main); }
-
-        /* 爆款对标拆解区 */
-        .section-title { 
-            font-size: 20px; 
-            font-weight: 800; 
-            margin-bottom: 8px; 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-            color: var(--text-main); 
-        }
-        .analysis-card { 
-            background: white; 
-            border: 2px solid #f1f5f9; 
-            padding: 24px; 
-            border-radius: 16px; 
-            margin-top: 16px;
-            transition: all 0.3s;
-        }
-        .analysis-card:hover {
-            border-color: #e2e8f0;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.04);
-        }
-        .analysis-header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            margin-bottom: 16px; 
-            font-weight: 700; 
-            font-size: 16px; 
-            border-bottom: 1px solid #f1f5f9;
-            padding-bottom: 12px;
-        }
-        .analysis-body { 
-            font-size: 14.5px; 
-            color: #334155; 
-            line-height: 1.7; 
-            background: #f8fafc; 
-            padding: 16px; 
-            border-radius: 12px; 
-            border-left: 4px solid var(--primary); 
-        }
-        
-        /* 平台直达跳转链接按钮 */
-        .platform-links {
-            margin-top: 16px; 
-            display: flex; 
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .link-btn {
-            padding: 8px 16px; 
-            border-radius: 8px; 
-            font-size: 13px; 
-            text-decoration: none; 
-            font-weight: 600; 
-            display: inline-flex; 
-            align-items: center; 
-            gap: 6px; 
-            transition: all 0.2s;
-        }
-        .link-xhs { background: #fff1f2; color: #e11d48; border: 1px solid #ffe4e6; }
-        .link-xhs:hover { background: #ffe4e6; transform: translateY(-1px); }
-        .link-bili { background: #f0f9ff; color: #0284c7; border: 1px solid #e0f2fe; }
-        .link-bili:hover { background: #e0f2fe; transform: translateY(-1px); }
-
-        /* 动画 */
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <div class="header">
-        <h1>Title Rocket Pro</h1>
-        <p>🚀 驱动爆款引擎 · 多平台适配 · 一键生成高转化率标题</p>
-    </div>
-
-    <div class="card">
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchPlatform('xhs')">📕 小红书</button>
-            <button class="tab-btn" onclick="switchPlatform('dy')">🎵 抖音</button>
-        </div>
-
-        <div class="input-group">
-            <input type="text" id="main-keyword" placeholder="输入灵感关键词，例如：AIGC教程、极简桌面布置...">
-            <button id="generate-btn" class="btn-primary">✨ AI 赋能生成</button>
-        </div>
-
-        <div id="ai-result-container" class="result-area"></div>
-    </div>
-
-    <div class="card">
-        <div class="section-title">🔍 爆款对标拆解</div>
-        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">输入领域关键词，系统将自动调用 AI 检索全网爆款视频并深度拆解底层逻辑。</p>
-
-        <div class="input-group">
-            <input type="text" id="search-keyword" placeholder="输入要分析的赛道，例如：数码测评、美妆开箱...">
-            <button id="search-btn" class="btn-primary btn-green">🎯 搜索热门素材</button>
-        </div>
-
-        <div id="search-result-container" class="search-results"></div>
-    </div>
-</div>
-
 <script>
-    // 💡 核心修改点：这里已经替换成了你刚刚在 Cloudflare 绑定的专属域名
+    // 你的专属域名
     const WORKER_API_URL = 'https://api.title-rocket.top';
     let currentPlatform = 'xhs';
 
@@ -346,7 +11,7 @@
         if (searchBtn) searchBtn.addEventListener('click', (e) => { e.preventDefault(); handleSearch(); });
     });
 
-    // 修复：添加了遗漏的 function 关键字
+    // 修复：添加了 function 关键字
     window.switchPlatform = function(platform) {
         currentPlatform = platform;
         const tabs = document.querySelectorAll('.tab-btn');
@@ -355,10 +20,10 @@
         else tabs[1].classList.add('active');
     }
 
-    // 修复：添加了遗漏的 function 关键字
+    // 修复：添加了 async function
     async function handleGenerate() {
         const keywordInput = document.getElementById('main-keyword');
-        const resultContainer = document.getElementById('ai-result-container');
+        const resultContainer = document.getElementById('ai--container');
         const btn = document.getElementById('generate-btn');
         const keyword = keywordInput.value.trim();
 
@@ -386,9 +51,9 @@
         }
     }
 
-    // 修复：添加了遗漏的 function 关键字
+    // 修复：添加了 function
     function renderTitles(titles) {
-        const container = document.getElementById('ai-result-container');
+        const container = document.getElementById('ai--container');
         container.innerHTML = ''; 
 
         titles.forEach(item => {
@@ -408,10 +73,10 @@
         });
     }
 
-    // 修复：添加了遗漏的 function 关键字
+    // 修复：添加了 async function
     async function handleSearch() {
         const keywordInput = document.getElementById('search-keyword');
-        const resultContainer = document.getElementById('search-result-container');
+        const resultContainer = document.getElementById('search--container');
         const btn = document.getElementById('search-btn');
         const keyword = keywordInput.value.trim();
 
@@ -439,15 +104,13 @@
         }
     }
 
-    // 修复：添加了遗漏的 function 关键字，并升级了 UI 布局
+    // 修复：添加了 function
     function renderAnalysis(items) {
-        const container = document.getElementById('search-result-container');
+        const container = document.getElementById('search--container');
         container.innerHTML = '';
 
         items.forEach(item => {
             const encodedTitle = encodeURIComponent(item.title);
-            
-            // 生成直达搜索链接
             const xhsSearchUrl = `https://www.xiaohongshu.com/search_result?keyword=${encodedTitle}`;
             const blblSearchUrl = `https://search.bilibili.com/all?keyword=${encodedTitle}`;
 
@@ -462,21 +125,16 @@
                     <strong>💡 核心爆点拆解：</strong><br/>
                     <span style="display:inline-block; margin-top:6px;">${item.analysis || '该标题利用了用户痛点，结合了具体数字，极具吸引力。'}</span>
                 </div>
-                
                 <div class="platform-links">
-                    <a href="${xhsSearchUrl}" target="_blank" class="link-btn link-xhs">
-                        📕 去小红书看原贴
-                    </a>
-                    <a href="${blblSearchUrl}" target="_blank" class="link-btn link-bili">
-                        📺 去 B 站搜原片
-                    </a>
+                    <a href="${xhsSearchUrl}" target="_blank" class="link-btn link-xhs">📕 去小红书看原贴</a>
+                    <a href="${blblSearchUrl}" target="_blank" class="link-btn link-bili">📺 去 B 站搜原片</a>
                 </div>
             `;
             container.appendChild(div);
         });
     }
 
-    // 修复：添加了遗漏的 function 关键字
+    // 修复：添加了 function
     window.copyToClipboard = function(text, btn) {
         navigator.clipboard.writeText(text).then(() => {
             const oldText = btn.innerText;
@@ -493,6 +151,3 @@
         });
     }
 </script>
-
-</body>
-</html>
